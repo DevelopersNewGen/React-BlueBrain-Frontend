@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-    baseURL: "http://localhost:27017/BlueBrain/v1",
+    baseURL: "http://27017:3000/BlueBrain/v1",
     timeout: 3000,
     httpsAgent: false
 });
