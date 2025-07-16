@@ -1,10 +1,14 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-    baseURL: "http://27017:3000/BlueBrain/v1",
+    baseURL: `http://localhost:3000/BlueBrain/v1`,
     timeout: 3000,
     httpsAgent: false
 });
+
+export const authEndpoints = {
+    login: `http://localhost:3000/BlueBrain/v1/auth/login`
+};
 
 apiClient.interceptors.request.use(
     (config) => {
@@ -25,3 +29,5 @@ apiClient.interceptors.request.use(
     },
     (error) => Promise.reject(error)
 );
+
+
