@@ -1,10 +1,36 @@
-import React from 'react';
+import React, { useState } from 'react';
 import useLogin from '../../shared/hooks/useLogin';
-import { Box, Container, Typography, Button, AppBar, Toolbar, Paper, Avatar, Chip } from '@mui/material';
-import { AccountCircle, ExitToApp, Dashboard } from '@mui/icons-material';
+import UserProfile from '../../components/user/UserProfile';
+import { Box, Container, Typography, Button, AppBar, Toolbar, Paper, Avatar, Menu, MenuItem, ListItemIcon, ListItemText, IconButton } from '@mui/material';
+import { AccountCircle, ExitToApp, Dashboard, Person } from '@mui/icons-material';
 
 export const DashboardPage = () => {
   const { user, login, logout, isAuthenticated } = useLogin();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const open = Boolean(anchorEl);
+
+  const handleMenuClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    logout();
+    handleMenuClose();
+  };
+
+  const handleProfile = () => {
+    setProfileOpen(true);
+    handleMenuClose();
+  };
+
+  const handleProfileClose = () => {
+    setProfileOpen(false);
+  };
 
   if (!isAuthenticated) {
     return (
@@ -71,20 +97,52 @@ export const DashboardPage = () => {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             BlueBrain Dashboard
           </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Chip
-              avatar={<Avatar><AccountCircle /></Avatar>}
-              label={`Hola, ${user?.name || user?.email}`}
-              variant="outlined"
-              sx={{ color: 'white', borderColor: 'white' }}
-            />
-            <Button
-              color="inherit"
-              onClick={logout}
-              startIcon={<ExitToApp />}
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <IconButton
+              onClick={handleMenuClick}
+              sx={{
+                color: 'white',
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                },
+              }}
             >
-              Cerrar sesión
-            </Button>
+              <Avatar 
+                sx={{ width: 32, height: 32 }}
+                src={user?.profilePicture || user?.img}
+                alt={user?.name || 'Usuario'}
+              >
+                {!user?.profilePicture && !user?.img && <AccountCircle />}
+              </Avatar>
+            </IconButton>
+            
+            <Menu
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleMenuClose}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              sx={{ mt: 1 }}
+            >
+              <MenuItem onClick={handleProfile}>
+                <ListItemIcon>
+                  <Person fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>Ver perfil</ListItemText>
+              </MenuItem>
+              <MenuItem onClick={handleLogout}>
+                <ListItemIcon>
+                  <ExitToApp fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>Cerrar sesión</ListItemText>
+              </MenuItem>
+            </Menu>
           </Box>
         </Toolbar>
       </AppBar>
@@ -128,6 +186,12 @@ export const DashboardPage = () => {
           </Typography>
         </Paper>
       </Container>
+
+      <UserProfile 
+        open={profileOpen}
+        onClose={handleProfileClose}
+        user={user}
+      />
     </Box>
   );
 };
