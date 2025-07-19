@@ -1,4 +1,3 @@
-import axios from 'axios';
 
 const apiClient = axios.create({
     baseURL: `http://localhost:3000/BlueBrain/v1`,
@@ -31,3 +30,14 @@ apiClient.interceptors.request.use(
 );
 
 
+
+export const getUserRoleByUid = async (uid) => {
+    try {
+        return await apiClient.get(`/users/role/${uid}`);
+    } catch (e) {
+        return { error: true, e };
+    }
+};
+
+
+import axios from 'axios';

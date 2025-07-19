@@ -1,36 +1,53 @@
 import React, { useState } from 'react';
 import useLogin from '../../shared/hooks/useLogin';
 import UserProfile from '../../components/user/UserProfile';
-import { Box, Container, Typography, Button, AppBar, Toolbar, Paper, Avatar, Menu, MenuItem, ListItemIcon, ListItemText, IconButton } from '@mui/material';
+import { Box, Container, Typography, Button, AppBar, Toolbar, Paper, Avatar, Menu, MenuItem, ListItemIcon, IconButton } from '@mui/material';
 import { AccountCircle, ExitToApp, Dashboard, Person } from '@mui/icons-material';
 
 export const DashboardPage = () => {
-  const { user, login, logout, isAuthenticated } = useLogin();
+  const { user, userWithRole, login, logout, isAuthenticated } = useLogin();
   const [anchorEl, setAnchorEl] = useState(null);
   const [profileOpen, setProfileOpen] = useState(false);
   const open = Boolean(anchorEl);
 
-  const handleMenuClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+  const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
+  const handleMenuClose = () => setAnchorEl(null);
+  const handleLogout = () => { logout(); handleMenuClose(); };
+  const handleProfile = () => { setProfileOpen(true); handleMenuClose(); };
+  const handleProfileClose = () => setProfileOpen(false);
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleLogout = () => {
-    logout();
-    handleMenuClose();
-  };
-
-  const handleProfile = () => {
-    setProfileOpen(true);
-    handleMenuClose();
-  };
-
-  const handleProfileClose = () => {
-    setProfileOpen(false);
-  };
+  const menuOptionsByRole = {
+  ADMIN_ROLE: [
+    { name: 'Material' },
+    { name: 'Usuarios' },
+    { name: 'Materias' },
+    { name: 'Reportes' },
+    { name: 'Solicitudes' }
+  ],
+  STUDENT_ROLE: [
+    { name: 'Material' },
+    { name: 'Mi perfil' },
+    { name: 'Materias' },
+    { name: 'Reportes' },
+    { name: 'Solicitudes' }
+  ],
+  TEACHER_ROLE: [
+    { name: 'Material' },
+    { name: 'Mi perfil' },
+    { name: 'Estudiantes' },
+    { name: 'Materias' },
+    { name: 'Reportes' },
+    { name: 'Solicitudes' }
+  ],
+  TUTOR_ROLE: [
+    { name: 'Material' },
+    { name: 'Mi perfil' },
+    { name: 'Tutoreados' },
+    { name: 'Materias' },
+    { name: 'Reportes' },
+    { name: 'Solicitudes' }
+  ]
+};
 
   if (!isAuthenticated) {
     return (
@@ -97,50 +114,42 @@ export const DashboardPage = () => {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             BlueBrain Dashboard
           </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <IconButton
-              onClick={handleMenuClick}
-              sx={{
-                color: 'white',
-                '&:hover': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                },
-              }}
-            >
-              <Avatar 
-                sx={{ width: 32, height: 32 }}
-                src={user?.profilePicture || user?.img}
-                alt={user?.name || 'Usuario'}
-              >
-                {!user?.profilePicture && !user?.img && <AccountCircle />}
-              </Avatar>
+          {userWithRole?.role && (
+            <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center' }}>
+              {menuOptionsByRole[userWithRole.role]?.map((option) => (
+                <Button
+                  key={option.name}
+                  sx={{ my: 2, color: 'white', display: 'block', alignItems: 'center', mx: 1, textTransform: 'none' }}
+                >
+                  {option.name.toUpperCase()}
+                </Button>
+              ))}
+            </Box>
+          )}
+          <Box sx={{ display: 'flex', alignItems: 'center', ml: 'auto' }}>
+            <IconButton onClick={handleMenuClick} sx={{ p: 0 }}>
+              <Avatar src={user?.profilePicture || user?.img} />
             </IconButton>
-            
             <Menu
+              sx={{ mt: '45px' }}
               anchorEl={anchorEl}
-              open={open}
+              anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+              keepMounted
+              transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+              open={Boolean(anchorEl)}
               onClose={handleMenuClose}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'right',
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              sx={{ mt: 1 }}
             >
               <MenuItem onClick={handleProfile}>
                 <ListItemIcon>
                   <Person fontSize="small" />
                 </ListItemIcon>
-                <ListItemText>Ver perfil</ListItemText>
+                Ver perfil
               </MenuItem>
               <MenuItem onClick={handleLogout}>
                 <ListItemIcon>
                   <ExitToApp fontSize="small" />
                 </ListItemIcon>
-                <ListItemText>Cerrar sesión</ListItemText>
+                Cerrar sesión
               </MenuItem>
             </Menu>
           </Box>

@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authEndpoints } from '../../services/api.jsx';
+import { authEndpoints, getUserRoleByUid } from '../../services/api.jsx';
 
 const useLogin = () => {
     const [user, setUser] = useState(null);
+    const [userWithRole, setUserWithRole] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
@@ -11,6 +12,27 @@ const useLogin = () => {
     useEffect(() => {
         checkAuthStatus();
     }, []);
+
+    useEffect(() => {
+        if (user && user.token) {
+            try {
+                const payloadBase64 = user.token.split('.')[1];
+                const payload = JSON.parse(atob(payloadBase64.replace(/-/g, '+').replace(/_/g, '/')));
+                getUserRoleByUid(payload.uid)
+                    .then(response => {
+                        const role = response?.data?.role;
+                        setUserWithRole({ ...user, role });
+                    })
+                    .catch(() => {
+                        setUserWithRole(user);
+                    });
+            } catch (e) {
+                setUserWithRole(user);
+            }
+        } else {
+            setUserWithRole(user);
+        }
+    }, [user]);
 
     const checkAuthStatus = () => {
         try {
@@ -22,7 +44,6 @@ const useLogin = () => {
                 }
             }
         } catch (err) {
-            console.error('Error al verificar el estado de autenticación:', err);
             setError('Error al verificar autenticación');
         } finally {
             setLoading(false);
@@ -55,6 +76,7 @@ const useLogin = () => {
 
     return {
         user,
+        userWithRole,
         loading,
         error,
         login,
