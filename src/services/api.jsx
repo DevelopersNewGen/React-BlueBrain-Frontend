@@ -1,4 +1,3 @@
-
 const apiClient = axios.create({
     baseURL: `http://localhost:3000/BlueBrain/v1`,
     timeout: 3000,
@@ -34,6 +33,15 @@ apiClient.interceptors.request.use(
 export const getUserRoleByUid = async (uid) => {
     try {
         return await apiClient.get(`/users/role/${uid}`);
+    } catch (e) {
+        return { error: true, e };
+    }
+};
+
+
+export const getAllUsers = async () => {
+    try {
+        return await apiClient.get('/users');
     } catch (e) {
         return { error: true, e };
     }

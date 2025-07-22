@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import useLogin from '../../shared/hooks/useLogin';
 import UserProfile from '../../components/user/UserProfile';
-import { Box, Container, Typography, Button, AppBar, Toolbar, Paper, Avatar, Menu, MenuItem, ListItemIcon, IconButton } from '@mui/material';
-import { AccountCircle, ExitToApp, Dashboard, Person } from '@mui/icons-material';
+import { Box, Container, Typography, Paper, Button } from '@mui/material';
+import { AccountCircle, Dashboard } from '@mui/icons-material';
+import Navbar from '../../components/Navbar';
 
 export const DashboardPage = () => {
   const { user, userWithRole, login, logout, isAuthenticated } = useLogin();
   const [anchorEl, setAnchorEl] = useState(null);
   const [profileOpen, setProfileOpen] = useState(false);
   const open = Boolean(anchorEl);
+  const navigate = useNavigate();
 
   const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);
@@ -16,38 +19,7 @@ export const DashboardPage = () => {
   const handleProfile = () => { setProfileOpen(true); handleMenuClose(); };
   const handleProfileClose = () => setProfileOpen(false);
 
-  const menuOptionsByRole = {
-  ADMIN_ROLE: [
-    { name: 'Material' },
-    { name: 'Usuarios' },
-    { name: 'Materias' },
-    { name: 'Reportes' },
-    { name: 'Solicitudes' }
-  ],
-  STUDENT_ROLE: [
-    { name: 'Material' },
-    { name: 'Mi perfil' },
-    { name: 'Materias' },
-    { name: 'Reportes' },
-    { name: 'Solicitudes' }
-  ],
-  TEACHER_ROLE: [
-    { name: 'Material' },
-    { name: 'Mi perfil' },
-    { name: 'Estudiantes' },
-    { name: 'Materias' },
-    { name: 'Reportes' },
-    { name: 'Solicitudes' }
-  ],
-  TUTOR_ROLE: [
-    { name: 'Material' },
-    { name: 'Mi perfil' },
-    { name: 'Tutoreados' },
-    { name: 'Materias' },
-    { name: 'Reportes' },
-    { name: 'Solicitudes' }
-  ]
-};
+  // ...existing code...
 
   if (!isAuthenticated) {
     return (
@@ -108,54 +80,17 @@ export const DashboardPage = () => {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static" elevation={1}>
-        <Toolbar>
-          <Dashboard sx={{ mr: 2 }} />
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            BlueBrain Dashboard
-          </Typography>
-          {userWithRole?.role && (
-            <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center' }}>
-              {menuOptionsByRole[userWithRole.role]?.map((option) => (
-                <Button
-                  key={option.name}
-                  sx={{ my: 2, color: 'white', display: 'block', alignItems: 'center', mx: 1, textTransform: 'none' }}
-                >
-                  {option.name.toUpperCase()}
-                </Button>
-              ))}
-            </Box>
-          )}
-          <Box sx={{ display: 'flex', alignItems: 'center', ml: 'auto' }}>
-            <IconButton onClick={handleMenuClick} sx={{ p: 0 }}>
-              <Avatar src={user?.profilePicture || user?.img} />
-            </IconButton>
-            <Menu
-              sx={{ mt: '45px' }}
-              anchorEl={anchorEl}
-              anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-              keepMounted
-              transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-              open={Boolean(anchorEl)}
-              onClose={handleMenuClose}
-            >
-              <MenuItem onClick={handleProfile}>
-                <ListItemIcon>
-                  <Person fontSize="small" />
-                </ListItemIcon>
-                Ver perfil
-              </MenuItem>
-              <MenuItem onClick={handleLogout}>
-                <ListItemIcon>
-                  <ExitToApp fontSize="small" />
-                </ListItemIcon>
-                Cerrar sesión
-              </MenuItem>
-            </Menu>
-          </Box>
-        </Toolbar>
-      </AppBar>
-
+      <Navbar
+        user={user}
+        userWithRole={userWithRole}
+        onProfile={handleProfile}
+        onLogout={handleLogout}
+        onMenuClick={handleMenuClick}
+        onMenuClose={handleMenuClose}
+        anchorEl={anchorEl}
+        open={open}
+        navigate={navigate}
+      />
       <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
         <Paper
           elevation={3}
@@ -195,7 +130,6 @@ export const DashboardPage = () => {
           </Typography>
         </Paper>
       </Container>
-
       <UserProfile 
         open={profileOpen}
         onClose={handleProfileClose}
