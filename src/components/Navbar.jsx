@@ -42,7 +42,13 @@ const Navbar = ({ user, userWithRole, navigate }) => {
   const handleMenuClose = () => setAnchorEl(null);
   const handleProfile = () => { setProfileOpen(true); handleMenuClose(); };
   const handleProfileClose = () => setProfileOpen(false);
-  const handleLogout = () => { if (user?.logout) user.logout(); handleMenuClose(); };
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("bluebrain_user");
+    if (user?.logout) user.logout();
+    handleMenuClose();
+    if (navigate) navigate("/login");
+  };
 
   return (
     <>
