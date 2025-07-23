@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AppBar, Toolbar, Typography, Box, Button, Avatar, Menu, MenuItem, ListItemIcon, IconButton } from '@mui/material';
 import { Dashboard, Person, ExitToApp } from '@mui/icons-material';
 import UserProfile from './user/UserProfile';
@@ -7,12 +8,13 @@ import UserProfile from './user/UserProfile';
 const menuOptionsByRole = {
   ADMIN_ROLE: [
     { name: 'Usuarios', route: '/usuarios' },
+    { name: 'Reportes', route: '/reportes' },
   ],
   STUDENT_ROLE: [
     { name: 'Material' },
     { name: 'Mi perfil' },
     { name: 'Materias' },
-    { name: 'Reportes' },
+    { name: 'Reportes', route: '/reportes' },
     { name: 'Solicitudes' }
   ],
   TEACHER_ROLE: [
@@ -20,7 +22,7 @@ const menuOptionsByRole = {
     { name: 'Mi perfil' },
     { name: 'Estudiantes' },
     { name: 'Materias' },
-    { name: 'Reportes' },
+    { name: 'Reportes', route: '/reportes' },
     { name: 'Solicitudes' }
   ],
   TUTOR_ROLE: [
@@ -28,15 +30,18 @@ const menuOptionsByRole = {
     { name: 'Mi perfil' },
     { name: 'Tutoreados' },
     { name: 'Materias' },
-    { name: 'Reportes' },
+    { name: 'Reportes', route: '/reportes' },
     { name: 'Solicitudes' }
   ]
 };
 
-const Navbar = ({ user, userWithRole, navigate }) => {
+const Navbar = ({ user, userWithRole, navigate: externalNavigate }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [profileOpen, setProfileOpen] = useState(false);
   const open = Boolean(anchorEl);
+  const internalNavigate = useNavigate();
+  
+  const navigate = externalNavigate || internalNavigate;
 
   const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);
@@ -59,7 +64,9 @@ const Navbar = ({ user, userWithRole, navigate }) => {
                   key={option.name}
                   sx={{ my: 2, color: 'white', display: 'block', alignItems: 'center', mx: 1, textTransform: 'none' }}
                   onClick={() => {
-                    if (option.route && navigate) navigate(option.route);
+                    if (option.route && navigate) {
+                      navigate(option.route);
+                    }
                   }}
                 >
                   {option.name.toUpperCase()}

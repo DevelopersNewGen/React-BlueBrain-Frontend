@@ -47,5 +47,48 @@ export const getAllUsers = async () => {
     }
 };
 
+// Reports 
+export const getAllReports = async () => {
+    try {
+        const response = await apiClient.get('/reports');
+        console.log('getAllReports response:', response);
+        return response;
+    } catch (e) {
+        console.error('getAllReports error:', e);
+        return { error: true, e };
+    }
+};
+
+export const getReportById = async (id) => {
+    try {
+        return await apiClient.get(`/reports/${id}`);
+    } catch (e) {
+        return { error: true, e };
+    }
+};
+
+export const createReport = async (reportData) => {
+    try {
+        return await apiClient.post('/reports', reportData);
+    } catch (e) {
+        return { error: true, e };
+    }
+};
+
+export const updateReport = async (id, reportData) => {
+    try {
+        return await apiClient.put(`/reports/${id}`, reportData);
+    } catch (e) {
+        return { error: true, e };
+    }
+};
+
+export const deleteReport = async (id) => {
+    try {
+        return await apiClient.delete(`/reports/${id}`);
+    } catch (e) {
+        return { error: true, e };
+    }
+};
 
 import axios from 'axios';
