@@ -7,11 +7,11 @@ import UserProfile from './user/UserProfile';
 const menuOptionsByRole = {
   ADMIN_ROLE: [
     { name: 'Usuarios', route: '/usuarios' },
+    { name: 'Materias', route: '/subjects' },
   ],
   STUDENT_ROLE: [
     { name: 'Material' },
     { name: 'Mi perfil' },
-    { name: 'Materias' },
     { name: 'Reportes' },
     { name: 'Solicitudes' }
   ],
@@ -19,7 +19,7 @@ const menuOptionsByRole = {
     { name: 'Material' },
     { name: 'Mi perfil' },
     { name: 'Estudiantes' },
-    { name: 'Materias' },
+    { name: 'Materias', route: '/subjects' },
     { name: 'Reportes' },
     { name: 'Solicitudes' }
   ],
@@ -27,7 +27,6 @@ const menuOptionsByRole = {
     { name: 'Material' },
     { name: 'Mi perfil' },
     { name: 'Tutoreados' },
-    { name: 'Materias' },
     { name: 'Reportes' },
     { name: 'Solicitudes' }
   ]

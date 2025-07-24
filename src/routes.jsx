@@ -3,6 +3,7 @@ import AuthCallback from "./pages/auth/AuthCallback";
 import AuthError from "./pages/auth/AuthError";
 import LoginPage from "./pages/auth/LoginPage";
 import UsersList from "./components/user/UsersList";
+import SubjectPage from "./pages/subject/SubjectPage";
 
 
 const routes = [
@@ -11,6 +12,7 @@ const routes = [
   { path: "/auth/error", element: <AuthError /> },
   { path: "/usuarios", element: <UsersList /> },
   { path: "/*", element: <DashboardPage /> },
+  { path: "/subjects", element: <SubjectPage /> }
 ];
 
 export default routes;
