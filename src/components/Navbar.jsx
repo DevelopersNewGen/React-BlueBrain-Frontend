@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { AppBar, Toolbar, Typography, Box, Button, Avatar, Menu, MenuItem, ListItemIcon, IconButton } from '@mui/material';
 import { Dashboard, Person, ExitToApp } from '@mui/icons-material';
 import UserProfile from './user/UserProfile';
+import useLogin from '../shared/hooks/useLogin';
 
 
 const menuOptionsByRole = {
@@ -33,10 +34,13 @@ const menuOptionsByRole = {
   ]
 };
 
-const Navbar = ({ user, userWithRole, navigate, onLogout }) => {
+const Navbar = ({ user: propUser, userWithRole: propUserWithRole, navigate, onLogout }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [profileOpen, setProfileOpen] = useState(false);
   const open = Boolean(anchorEl);
+  const { user: hookUser, userWithRole: hookUserWithRole, logout: hookLogout } = useLogin();
+  const user = propUser || hookUser;
+  const userWithRole = propUserWithRole || hookUserWithRole;
 
   const handleMenuClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -59,6 +63,8 @@ const Navbar = ({ user, userWithRole, navigate, onLogout }) => {
     handleMenuClose(); 
     if (onLogout) {
       onLogout(); 
+    } else if (hookLogout) {
+      hookLogout();
     }
   };
 
