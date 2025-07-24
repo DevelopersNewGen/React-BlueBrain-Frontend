@@ -1,31 +1,7 @@
 import React, { useState } from 'react';
+import {Box,Paper,Typography,Table,TableBody,TableCell,TableContainer,TableHead,TableRow,IconButton,Chip,Dialog,DialogTitle,DialogContent,DialogActions,TextField,MenuItem,Alert,CircularProgress,Button} from '@mui/material';
 import {
-    Box,
-    Paper,
-    Typography,
-    Button,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    IconButton,
-    Chip,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    TextField,
-    MenuItem,
-    Alert,
-    CircularProgress,
-    Fab
-} from '@mui/material';
-import {
-    Add as AddIcon,
     Edit as EditIcon,
-    Delete as DeleteIcon,
     Visibility as ViewIcon
 } from '@mui/icons-material';
 import { useReports } from '../../shared/hooks';
@@ -41,9 +17,8 @@ const reportTypes = [
 
 const reportStatus = [
     { value: 'PENDING', label: 'Pendiente', color: 'warning' },
-    { value: 'IN_PROGRESS', label: 'En Progreso', color: 'info' },
-    { value: 'COMPLETED', label: 'Completado', color: 'success' },
-    { value: 'CANCELLED', label: 'Cancelado', color: 'error' }
+    { value: 'RESOLVED', label: 'Resuelto', color: 'success' },
+    { value: 'REJECTED', label: 'Rechazado', color: 'error' }
 ];
 
 const ReportsList = () => {
@@ -51,9 +26,7 @@ const ReportsList = () => {
         reports,
         loading,
         error,
-        handleCreateReport,
-        handleUpdateReport,
-        handleDeleteReport,
+        handleUpdateReportStatus,
         setError
     } = useReports();
 
@@ -61,33 +34,28 @@ const ReportsList = () => {
 
     const [openDialog, setOpenDialog] = useState(false);
     const [selectedReport, setSelectedReport] = useState(null);
-    const [dialogMode, setDialogMode] = useState('create'); 
-    const [formData, setFormData] = useState({
-        title: '',
-        description: '',
-        type: 'ACADEMIC',
-        status: 'PENDING'
-    });
+    const [dialogMode, setDialogMode] = useState('view'); 
+    const [currentStatus, setCurrentStatus] = useState('PENDING');
 
     const safeReports = Array.isArray(reports) ? reports : [];
+
+    const normalizeType = (type) => {
+        const validTypes = reportTypes.map(t => t.value);
+        return validTypes.includes(type) ? type : 'OTHER';
+    };
+
+    const normalizeStatus = (status) => {
+        const validStatuses = reportStatus.map(s => s.value);
+        return validStatuses.includes(status) ? status : 'PENDING';
+    };
 
     const handleOpenDialog = (mode, report = null) => {
         setDialogMode(mode);
         setSelectedReport(report);
         if (report) {
-            setFormData({
-                title: report.title || '',
-                description: report.description || '',
-                type: report.type || 'ACADEMIC',
-                status: report.status || 'PENDING'
-            });
+            setCurrentStatus(normalizeStatus(report.status));
         } else {
-            setFormData({
-                title: '',
-                description: '',
-                type: 'ACADEMIC',
-                status: 'PENDING'
-            });
+            setCurrentStatus('PENDING');
         }
         setOpenDialog(true);
     };
@@ -96,41 +64,32 @@ const ReportsList = () => {
         setOpenDialog(false);
         setSelectedReport(null);
         setError(null);
+        setCurrentStatus('PENDING');
     };
 
-    const handleInputChange = (field, value) => {
-        setFormData(prev => ({
-            ...prev,
-            [field]: value
-        }));
+    const handleStatusChange = (value) => {
+        setCurrentStatus(value);
     };
 
     const handleSubmit = async () => {
-        if (!formData.title.trim()) {
-            setError('El título es requerido');
-            return;
-        }
+        if (dialogMode === 'edit' && selectedReport) {
+            const reportId = selectedReport?.rid;
 
-        let success = false;
-        if (dialogMode === 'create') {
-            success = await handleCreateReport(formData);
-        } else if (dialogMode === 'edit') {
-            success = await handleUpdateReport(selectedReport.id, formData);
-        }
+            if (!reportId) {
+                setError('No se pudo identificar el ID del reporte');
+                return;
+            }
 
-        if (success) {
-            handleCloseDialog();
-        }
-    };
-
-    const handleDelete = async (reportId) => {
-        if (window.confirm('¿Estás seguro de que quieres eliminar este reporte?')) {
-            await handleDeleteReport(reportId);
+            const success = await handleUpdateReportStatus(reportId, currentStatus);
+            if (success) {
+                handleCloseDialog();
+            }
         }
     };
 
     const getStatusChip = (status) => {
-        const statusInfo = reportStatus.find(s => s.value === status) || reportStatus[0];
+        const normalizedStatus = normalizeStatus(status);
+        const statusInfo = reportStatus.find(s => s.value === normalizedStatus);
         return (
             <Chip
                 label={statusInfo.label}
@@ -141,20 +100,10 @@ const ReportsList = () => {
     };
 
     const getTypeLabel = (type) => {
-        const typeInfo = reportTypes.find(t => t.value === type);
-        return typeInfo ? typeInfo.label : type;
+        const normalizedType = normalizeType(type);
+        const typeInfo = reportTypes.find(t => t.value === normalizedType);
+        return typeInfo ? typeInfo.label : 'Otro';
     };
-
-    // Debug info
-    console.log('ReportsList Debug:', { 
-        reports, 
-        safeReports,
-        isArray: Array.isArray(reports), 
-        safeIsArray: Array.isArray(safeReports),
-        length: safeReports?.length, 
-        loading, 
-        error 
-    });
 
     if (loading && safeReports.length === 0) {
         return (
@@ -173,178 +122,149 @@ const ReportsList = () => {
                         <Typography variant="h4" component="h1">
                             Reportes
                         </Typography>
-                    <Button
-                        variant="contained"
-                        startIcon={<AddIcon />}
-                        onClick={() => handleOpenDialog('create')}
-                    >
-                        Nuevo Reporte
-                    </Button>
-                </Box>
+                    </Box>
 
-                {error && (
-                    <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
-                        {error}
-                    </Alert>
-                )}
+                    {error && (
+                        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
+                            {error}
+                        </Alert>
+                    )}
 
-                <TableContainer>
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>Título</TableCell>
-                                <TableCell>Tipo</TableCell>
-                                <TableCell>Estado</TableCell>
-                                <TableCell>Fecha de Creación</TableCell>
-                                <TableCell align="center">Acciones</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {safeReports.length === 0 ? (
+                    <TableContainer>
+                        <Table>
+                            <TableHead>
                                 <TableRow>
-                                    <TableCell colSpan={5} align="center">
-                                        <Typography variant="body2" color="text.secondary">
-                                            No hay reportes disponibles
-                                        </Typography>
-                                    </TableCell>
+                                    <TableCell>Título</TableCell>
+                                    <TableCell>Tipo</TableCell>
+                                    <TableCell>Estado</TableCell>
+                                    <TableCell>Fecha de Creación</TableCell>
+                                    <TableCell align="center">Acciones</TableCell>
                                 </TableRow>
-                            ) : (
-                                safeReports.map((report) => (
-                                    <TableRow key={report.id}>
-                                        <TableCell>
-                                            <Typography variant="subtitle2">
-                                                {report.title}
+                            </TableHead>
+                            <TableBody>
+                                {safeReports.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell colSpan={5} align="center">
+                                            <Typography variant="body2" color="text.secondary">
+                                                No hay reportes disponibles
                                             </Typography>
                                         </TableCell>
-                                        <TableCell>{getTypeLabel(report.type)}</TableCell>
-                                        <TableCell>{getStatusChip(report.status)}</TableCell>
-                                        <TableCell>
-                                            {report.createdAt ? new Date(report.createdAt).toLocaleDateString() : '-'}
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            <IconButton
-                                                size="small"
-                                                onClick={() => handleOpenDialog('view', report)}
-                                                title="Ver"
-                                            >
-                                                <ViewIcon />
-                                            </IconButton>
-                                            <IconButton
-                                                size="small"
-                                                onClick={() => handleOpenDialog('edit', report)}
-                                                title="Editar"
-                                            >
-                                                <EditIcon />
-                                            </IconButton>
-                                            <IconButton
-                                                size="small"
-                                                onClick={() => handleDelete(report.id)}
-                                                color="error"
-                                                title="Eliminar"
-                                            >
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        </TableCell>
                                     </TableRow>
-                                ))
+                                ) : (
+                                    safeReports.map((report, index) => (
+                                        <TableRow key={report._id || report.id || report.reportTo?._id || `report-${index}`}>
+                                            <TableCell>
+                                                <Typography variant="subtitle2">
+                                                    {report.title || report.reason || 'Sin título'}
+                                                </Typography>
+                                            </TableCell>
+                                            <TableCell>{getTypeLabel(report.type)}</TableCell>
+                                            <TableCell>{getStatusChip(report.status)}</TableCell>
+                                            <TableCell>
+                                                {report.createdAt ? new Date(report.createdAt).toLocaleDateString() : '-'}
+                                            </TableCell>
+                                            <TableCell align="center">
+                                                <IconButton
+                                                    size="small"
+                                                    onClick={() => handleOpenDialog('view', report)}
+                                                    title="Ver"
+                                                >
+                                                    <ViewIcon />
+                                                </IconButton>
+                                                <IconButton
+                                                    size="small"
+                                                    onClick={() => handleOpenDialog('edit', report)}
+                                                    title="Cambiar Estado"
+                                                >
+                                                    <EditIcon />
+                                                </IconButton>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </Paper>
+
+                <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
+                    <DialogTitle>
+                        {dialogMode === 'edit' && 'Cambiar Estado del Reporte'}
+                        {dialogMode === 'view' && 'Ver Reporte'}
+                    </DialogTitle>
+                    <DialogContent>
+                        <Box sx={{ mt: 2 }}>
+                            {dialogMode === 'view' && (
+                                <>
+                                    <TextField
+                                        fullWidth
+                                        label="Motivo"
+                                        value={selectedReport?.reason || selectedReport?.title || 'Sin motivo'}
+                                        disabled
+                                        margin="normal"
+                                    />
+                                    
+                                    <TextField
+                                        fullWidth
+                                        label="Detalles"
+                                        value={selectedReport?.details || selectedReport?.description || 'Sin detalles'}
+                                        disabled
+                                        margin="normal"
+                                        multiline
+                                        rows={3}
+                                    />
+                                    
+                                    <TextField
+                                        fullWidth
+                                        label="Tipo"
+                                        value={getTypeLabel(selectedReport?.type)}
+                                        disabled
+                                        margin="normal"
+                                    />
+                                    
+                                    <TextField
+                                        fullWidth
+                                        label="Estudiante Reportado"
+                                        value={selectedReport?.reportTo?.name || 'No especificado'}
+                                        disabled
+                                        margin="normal"
+                                    />
+                                </>
                             )}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-            </Paper>
-
-            <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth>
-                <DialogTitle>
-                    {dialogMode === 'create' && 'Crear Nuevo Reporte'}
-                    {dialogMode === 'edit' && 'Editar Reporte'}
-                    {dialogMode === 'view' && 'Ver Reporte'}
-                </DialogTitle>
-                <DialogContent>
-                    <Box sx={{ mt: 2 }}>
-                        <TextField
-                            fullWidth
-                            label="Título"
-                            value={formData.title}
-                            onChange={(e) => handleInputChange('title', e.target.value)}
-                            disabled={dialogMode === 'view'}
-                            margin="normal"
-                            required
-                        />
-                        
-                        <TextField
-                            fullWidth
-                            label="Descripción"
-                            value={formData.description}
-                            onChange={(e) => handleInputChange('description', e.target.value)}
-                            disabled={dialogMode === 'view'}
-                            margin="normal"
-                            multiline
-                            rows={4}
-                        />
-                        
-                        <TextField
-                            fullWidth
-                            select
-                            label="Tipo"
-                            value={formData.type}
-                            onChange={(e) => handleInputChange('type', e.target.value)}
-                            disabled={dialogMode === 'view'}
-                            margin="normal"
-                        >
-                            {reportTypes.map((option) => (
-                                <MenuItem key={option.value} value={option.value}>
-                                    {option.label}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                        
-                        <TextField
-                            fullWidth
-                            select
-                            label="Estado"
-                            value={formData.status}
-                            onChange={(e) => handleInputChange('status', e.target.value)}
-                            disabled={dialogMode === 'view'}
-                            margin="normal"
-                        >
-                            {reportStatus.map((option) => (
-                                <MenuItem key={option.value} value={option.value}>
-                                    {option.label}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                    </Box>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseDialog}>
-                        {dialogMode === 'view' ? 'Cerrar' : 'Cancelar'}
-                    </Button>
-                    {dialogMode !== 'view' && (
-                        <Button
-                            onClick={handleSubmit}
-                            variant="contained"
-                            disabled={loading}
-                        >
-                            {loading ? <CircularProgress size={20} /> : 
-                             dialogMode === 'create' ? 'Crear' : 'Actualizar'}
+                            
+                            <TextField
+                                fullWidth
+                                select
+                                label="Estado"
+                                value={currentStatus}
+                                onChange={(e) => handleStatusChange(e.target.value)}
+                                disabled={dialogMode === 'view'}
+                                margin="normal"
+                                helperText={dialogMode === 'edit' ? 'Selecciona el nuevo estado del reporte' : ''}
+                            >
+                                {reportStatus.map((option) => (
+                                    <MenuItem key={option.value} value={option.value}>
+                                        {option.label}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                        </Box>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleCloseDialog}>
+                            {dialogMode === 'view' ? 'Cerrar' : 'Cancelar'}
                         </Button>
-                    )}
-                </DialogActions>
-            </Dialog>
-
-            <Fab
-                color="primary"
-                aria-label="add"
-                sx={{
-                    position: 'fixed',
-                    bottom: 16,
-                    right: 16,
-                    display: { xs: 'flex', sm: 'none' }
-                }}
-                onClick={() => handleOpenDialog('create')}
-            >
-                <AddIcon />
-            </Fab>
+                        {dialogMode === 'edit' && (
+                            <Button
+                                onClick={handleSubmit}
+                                variant="contained"
+                                disabled={loading}
+                            >
+                                {loading ? <CircularProgress size={20} /> : 'Actualizar Estado'}
+                            </Button>
+                        )}
+                    </DialogActions>
+                </Dialog>
             </Box>
         </>
     );

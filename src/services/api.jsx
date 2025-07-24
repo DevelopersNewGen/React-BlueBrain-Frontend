@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 const apiClient = axios.create({
     baseURL: `http://localhost:3000/BlueBrain/v1`,
     timeout: 3000,
@@ -28,8 +30,6 @@ apiClient.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
-
-
 export const getUserRoleByUid = async (uid) => {
     try {
         return await apiClient.get(`/users/role/${uid}`);
@@ -38,7 +38,6 @@ export const getUserRoleByUid = async (uid) => {
     }
 };
 
-
 export const getAllUsers = async () => {
     try {
         return await apiClient.get('/users');
@@ -46,8 +45,7 @@ export const getAllUsers = async () => {
         return { error: true, e };
     }
 };
-
-// Reports 
+// reports 
 export const getAllReports = async () => {
     try {
         const response = await apiClient.get('/reports');
@@ -59,36 +57,12 @@ export const getAllReports = async () => {
     }
 };
 
-export const getReportById = async (id) => {
+export const updateReportStatus = async (reportId, status) => {
     try {
-        return await apiClient.get(`/reports/${id}`);
+        const response = await apiClient.patch(`/reports/status/${reportId}`, { status });
+        return response;
     } catch (e) {
+        console.error('updateReportStatus error:', e);
         return { error: true, e };
     }
 };
-
-export const createReport = async (reportData) => {
-    try {
-        return await apiClient.post('/reports', reportData);
-    } catch (e) {
-        return { error: true, e };
-    }
-};
-
-export const updateReport = async (id, reportData) => {
-    try {
-        return await apiClient.put(`/reports/${id}`, reportData);
-    } catch (e) {
-        return { error: true, e };
-    }
-};
-
-export const deleteReport = async (id) => {
-    try {
-        return await apiClient.delete(`/reports/${id}`);
-    } catch (e) {
-        return { error: true, e };
-    }
-};
-
-import axios from 'axios';

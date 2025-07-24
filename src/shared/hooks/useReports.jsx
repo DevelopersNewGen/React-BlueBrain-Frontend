@@ -1,125 +1,108 @@
-import { useState, useEffect } from 'react';
-import { getAllReports, getReportById, createReport, updateReport, deleteReport } from '../../services/api';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { getAllReports, updateReportStatus } from '../../services/api';
 
 export const useReports = () => {
     const [reports, setReports] = useState([]);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const hasInitialized = useRef(false);
 
-    const fetchReports = async () => {
+    const fetchReports = useCallback(async () => {
+        if (loading && reports.length > 0) return; 
+        
         setLoading(true);
         setError(null);
         try {
             const response = await getAllReports();
             if (response.error) {
-                setError(response.e?.message || 'Error al obtener los reportes');
+                const errorMessage = response.e?.response?.data?.message || 
+                                   response.e?.message || 
+                                   'Error al obtener los reportes';
+                
+                if (response.e?.response?.status === 401 || errorMessage.includes('token')) {
+                    setError('Sesión expirada. Por favor, inicia sesión nuevamente.');
+                } else {
+                    setError(errorMessage);
+                }
                 setReports([]);
             } else {
-                const reportsData = Array.isArray(response.data) ? response.data : 
-                                   Array.isArray(response) ? response : [];
+                let reportsData = response.data?.reports || 
+                                 response.data?.data || 
+                                 (Array.isArray(response.data) ? response.data : []);
+                
+                reportsData = reportsData.map((report, index) => {
+                    return report;
+                });
+                
                 setReports(reportsData);
+                setError(null);
             }
         } catch (err) {
-            console.error('Error fetching reports:', err);
-            setError('Error al obtener los reportes');
+            if (err.response?.status === 401 || err.response?.status === 403) {
+                setError('Sesión expirada. Por favor, inicia sesión nuevamente.');
+            } else if (err.response?.status === 500) {
+                const serverMessage = err.response?.data?.message || '';
+                if (serverMessage.includes('token') || serverMessage.includes('validar')) {
+                    setError('Token de autenticación inválido. Por favor, inicia sesión nuevamente.');
+                } else {
+                    setError('Error del servidor. Por favor, inténtalo más tarde.');
+                }
+            } else {
+                const errorMessage = err.response?.data?.message || 
+                                    err.message || 
+                                    'Error al conectar con el servidor';
+                setError(errorMessage);
+            }
             setReports([]);
         } finally {
             setLoading(false);
         }
-    };
+    }, [loading, reports.length]);
 
-    const fetchReportById = async (id) => {
-        setLoading(true);
-        setError(null);
-        try {
-            const response = await getReportById(id);
-            if (response.error) {
-                setError(response.e?.message || 'Error al obtener el reporte');
-                return null;
-            } else {
-                return response.data;
-            }
-        } catch (err) {
-            setError('Error al obtener el reporte');
-            return null;
-        } finally {
-            setLoading(false);
+    const handleUpdateReportStatus = useCallback(async (reportId, status) => {
+        if (!reportId) {
+            setError('ID del reporte no válido');
+            return false;
         }
-    };
-
-    const handleCreateReport = async (reportData) => {
+        
         setLoading(true);
         setError(null);
         try {
-            const response = await createReport(reportData);
+            const response = await updateReportStatus(reportId, status);
             if (response.error) {
-                setError(response.e?.message || 'Error al crear el reporte');
+                const errorMessage = response.e?.response?.data?.message || 
+                                   response.e?.message || 
+                                   'Error al actualizar el estado del reporte';
+                setError(errorMessage);
                 return false;
             } else {
                 await fetchReports(); 
                 return true;
             }
         } catch (err) {
-            setError('Error al crear el reporte');
+            const errorMessage = err.response?.data?.message || 
+                                err.message || 
+                                'Error al conectar con el servidor';
+            setError(errorMessage);
             return false;
         } finally {
             setLoading(false);
         }
-    };
-
-    const handleUpdateReport = async (id, reportData) => {
-        setLoading(true);
-        setError(null);
-        try {
-            const response = await updateReport(id, reportData);
-            if (response.error) {
-                setError(response.e?.message || 'Error al actualizar el reporte');
-                return false;
-            } else {
-                await fetchReports(); 
-                return true;
-            }
-        } catch (err) {
-            setError('Error al actualizar el reporte');
-            return false;
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleDeleteReport = async (id) => {
-        setLoading(true);
-        setError(null);
-        try {
-            const response = await deleteReport(id);
-            if (response.error) {
-                setError(response.e?.message || 'Error al eliminar el reporte');
-                return false;
-            } else {
-                await fetchReports(); 
-                return true;
-            }
-        } catch (err) {
-            setError('Error al eliminar el reporte');
-            return false;
-        } finally {
-            setLoading(false);
-        }
-    };
+    }, [fetchReports]);
 
     useEffect(() => {
-        fetchReports();
-    }, []);
+        if (!hasInitialized.current) {
+            hasInitialized.current = true;
+            fetchReports();
+        }
+    }, [fetchReports]);
 
     return {
         reports,
         loading,
         error,
         fetchReports,
-        fetchReportById,
-        handleCreateReport,
-        handleUpdateReport,
-        handleDeleteReport,
+        handleUpdateReportStatus,
         setError
     };
 };
