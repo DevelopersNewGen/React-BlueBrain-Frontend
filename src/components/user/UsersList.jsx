@@ -61,7 +61,7 @@ const UsersList = () => {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <Navbar user={user} userWithRole={userWithRole} />
+      <Navbar user={user} userWithRole={userWithRole} onLogout={logout} />
       <Box sx={{ mt: 4 }}>
         <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold' }}>
           Lista de Usuarios

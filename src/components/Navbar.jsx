@@ -33,16 +33,34 @@ const menuOptionsByRole = {
   ]
 };
 
-const Navbar = ({ user, userWithRole, navigate }) => {
+const Navbar = ({ user, userWithRole, navigate, onLogout }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [profileOpen, setProfileOpen] = useState(false);
   const open = Boolean(anchorEl);
 
-  const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
-  const handleMenuClose = () => setAnchorEl(null);
-  const handleProfile = () => { setProfileOpen(true); handleMenuClose(); };
-  const handleProfileClose = () => setProfileOpen(false);
-  const handleLogout = () => { if (user?.logout) user.logout(); handleMenuClose(); };
+  const handleMenuClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+  
+  const handleProfile = () => { 
+    setProfileOpen(true); 
+    handleMenuClose(); 
+  };
+  
+  const handleProfileClose = () => {
+    setProfileOpen(false);
+  };
+  
+  const handleLogout = () => { 
+    handleMenuClose(); 
+    if (onLogout) {
+      onLogout(); 
+    }
+  };
 
   return (
     <>
@@ -68,25 +86,46 @@ const Navbar = ({ user, userWithRole, navigate }) => {
             </Box>
           )}
           <Box sx={{ display: 'flex', alignItems: 'center', ml: 'auto' }}>
-            <IconButton onClick={handleMenuClick} sx={{ p: 0 }}>
+            <IconButton 
+              id="user-menu-button"
+              onClick={handleMenuClick} 
+              sx={{ p: 0 }}
+              aria-controls={open ? 'user-menu' : undefined}
+              aria-haspopup="true"
+              aria-expanded={open ? 'true' : undefined}
+              aria-label="Abrir menú de usuario"
+            >
               <Avatar src={user?.profilePicture || user?.img} />
             </IconButton>
             <Menu
+              id="user-menu"
               sx={{ mt: '45px' }}
               anchorEl={anchorEl}
               anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-              keepMounted
+              keepMounted={false}
               transformOrigin={{ vertical: 'top', horizontal: 'right' }}
               open={open}
               onClose={handleMenuClose}
+              MenuListProps={{
+                'aria-labelledby': 'user-menu-button',
+                role: 'menu'
+              }}
             >
-              <MenuItem onClick={handleProfile}>
+              <MenuItem 
+                onClick={handleProfile}
+                role="menuitem"
+                aria-label="Ver perfil de usuario"
+              >
                 <ListItemIcon>
                   <Person fontSize="small" />
                 </ListItemIcon>
                 Ver perfil
               </MenuItem>
-              <MenuItem onClick={handleLogout}>
+              <MenuItem 
+                onClick={handleLogout}
+                role="menuitem"
+                aria-label="Cerrar sesión"
+              >
                 <ListItemIcon>
                   <ExitToApp fontSize="small" />
                 </ListItemIcon>
