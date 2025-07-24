@@ -47,5 +47,18 @@ export const getAllUsers = async () => {
     }
 };
 
+export const updateProfilePicture = async (formData) => {
+    try {
+        const response = await apiClient.patch('/users/updateProfilePicture', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        return response.data;
+    } catch (e) {
+        return { error: true, e };
+    }
+};
+
 
 import axios from 'axios';
