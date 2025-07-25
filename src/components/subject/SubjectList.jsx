@@ -13,6 +13,12 @@ import useSubjectRemoveTeacher from '../../shared/hooks/useSubjectRemoveTeacher'
 import useSubjectRemoveTutor from '../../shared/hooks/useSubjectRemoveTutor'
 
 const SubjectList = () => {
+  const currentUser = JSON.parse(localStorage.getItem('user') || '{}')
+  const role = currentUser.role
+  console.log('User role:', role)  
+  const isAdminOrTeacher = ['ADMIN_ROLE', 'TEACHER_ROLE', 'ADMIN', 'TEACHER']
+    .includes((role || '').toUpperCase())
+
   const { subjects, loading, error, refetch } = useSubjectGets()
   const { postSubject, loading: posting, error: postError, success: postSuccess } = useSubjectPost()
   const { putSubject, loading: putting, error: putError, success: putSuccess } = useSubjectPut()
@@ -179,9 +185,11 @@ const SubjectList = () => {
     <>
       <Navbar />
       <Box p={4}>
-        <Button variant="contained" onClick={handleOpen}>
-          Agregar Materia
-        </Button>
+        { isAdminOrTeacher &&
+          <Button variant="contained" onClick={handleOpen}>
+            Agregar Materia
+          </Button>
+        }
       </Box>
       {loading ? (
         <Box display="flex" justifyContent="center" mt={4}>
@@ -422,25 +430,23 @@ const SubjectList = () => {
         open={Boolean(menuAnchorEl)}
         onClose={handleMenuClose}
       >
-        <MenuItem onClick={() => { handleViewOpen(menuSubject);   handleMenuClose() }}>
+        <MenuItem onClick={() => { handleViewOpen(menuSubject); handleMenuClose() }}>
           Ver detalles
         </MenuItem>
-        <MenuItem onClick={() => { handleEditOpen(menuSubject);   handleMenuClose() }}>
-          Editar
-        </MenuItem>
-        <MenuItem onClick={() => { handleAddTeacherOpen(menuSubject.sid); handleMenuClose() }}>
-          Agregar profesor
-        </MenuItem>
-        <MenuItem onClick={() => {
-            handleViewOpen(menuSubject)
-            handleMenuClose()
-          }}
-        >
-          Eliminar profesor
-        </MenuItem>
-        <MenuItem onClick={() => { handleDelete(menuSubject.sid); handleMenuClose() }}>
-          Eliminar materia
-        </MenuItem>
+        { isAdminOrTeacher && <>
+          <MenuItem onClick={() => { handleEditOpen(menuSubject); handleMenuClose() }}>
+            Editar
+          </MenuItem>
+          <MenuItem onClick={() => { handleAddTeacherOpen(menuSubject.sid); handleMenuClose() }}>
+            Agregar profesor
+          </MenuItem>
+          <MenuItem onClick={() => { handleViewOpen(menuSubject); handleMenuClose() }}>
+            Eliminar profesor
+          </MenuItem>
+          <MenuItem onClick={() => { handleDelete(menuSubject.sid); handleMenuClose() }}>
+            Eliminar materia
+          </MenuItem>
+        </> }
       </Menu>
       {deleteError && (
         <Box mt={2}>
@@ -460,4 +466,4 @@ const SubjectList = () => {
   )
 }
 
-export default SubjectList
+export default SubjectList

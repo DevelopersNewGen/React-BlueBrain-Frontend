@@ -21,12 +21,14 @@ const useLogin = () => {
                 getUserRoleByUid(payload.uid)
                     .then(response => {
                         const role = response?.data?.role;
-                        setUserWithRole({ ...user, role });
+                        const fullUser = { ...user, role };
+                        setUserWithRole(fullUser);
+                        localStorage.setItem('user', JSON.stringify(fullUser));
                     })
                     .catch(() => {
                         setUserWithRole(user);
                     });
-            } catch (e) {
+            } catch {
                 setUserWithRole(user);
             }
         } else {
@@ -75,8 +77,7 @@ const useLogin = () => {
     };
 
     return {
-        user,
-        userWithRole,
+        user: userWithRole,
         loading,
         error,
         login,
