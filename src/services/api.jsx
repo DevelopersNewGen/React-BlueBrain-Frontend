@@ -40,11 +40,17 @@ export const getUserRoleByUid = async (uid) => {
 
 
 export const getAllUsers = async () => {
-    try {
-        return await apiClient.get('/users');
-    } catch (e) {
-        return { error: true, e };
+  try {
+    const response = await apiClient.get('/users')
+    return {
+      success: response.data.success,
+      data: Array.isArray(response.data.users) ? response.data.users : [],
+      message: response.data.message
     }
+  } catch (e) {
+    console.error('Error en getAllUsers:', e)
+    return { success: false, message: e.message, data: [] }
+  }
 };
 
 export const updateProfilePicture = async (formData) => {
