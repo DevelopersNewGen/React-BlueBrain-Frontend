@@ -13,6 +13,7 @@ import Navbar from '../Navbar'
 import {Box,Typography,Table,TableHead,TableBody,TableRow,TableCell,TableContainer,Paper,Avatar,CircularProgress,Alert,Button,Dialog,DialogTitle,DialogContent,DialogActions,TextField,Checkbox,FormControlLabel,Snackbar,IconButton,Autocomplete,Menu,MenuItem} from '@mui/material'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import useSubjectRemoveTeacher from '../../shared/hooks/useSubjectRemoveTeacher'
+import useSubjectRemoveTutor from '../../shared/hooks/useSubjectRemoveTutor'
 
 const SubjectList = () => {
   const { subjects, loading, error, refetch } = useSubjectGets()
@@ -22,6 +23,7 @@ const SubjectList = () => {
   const { addTeacher, loading: addingTeacher, error: addTeacherError, success: addTeacherSuccess } = useSubjectAddTeacher()
   const { users, loading: usersLoading, error: usersError, refetch: refetchUsers } = useUserGets()
   const { removeTeacher, loading: removingTeacher, error: removeTeacherError, response: removeTeacherResponse } = useSubjectRemoveTeacher()
+  const { removeTutor, loading: removingTutorTutor, error: removeTutorError, response: removeTutorResponse } = useSubjectRemoveTutor()
 
   const teachersList = Array.isArray(users)
     ? users.filter(u => u.role === 'TEACHER_ROLE')
@@ -89,12 +91,24 @@ const SubjectList = () => {
     await removeTeacher(sid, teacherId)
   }
 
+  const handleRemoveTutor = async (sid, tutorId) => {
+    if (!window.confirm('¿Eliminar este tutor de la materia?')) return
+    await removeTutor(sid, tutorId)
+  }
+
   useEffect(() => {
     if (removeTeacherResponse?.success) {
       refetch()
       setViewOpen(false)
     }
   }, [removeTeacherResponse, refetch])
+
+  useEffect(() => {
+    if (removeTutorResponse?.success) {
+      refetch()
+      setViewOpen(false)
+    }
+  }, [removeTutorResponse, refetch])
 
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
@@ -338,9 +352,36 @@ const SubjectList = () => {
               ))
             : <Typography>No hay docentes asignados.</Typography>
           }
+          <Typography variant="h6" mt={2}>Tutores asignados</Typography>
+          {viewSubject?.tutors?.length > 0
+            ? viewSubject.tutors.map(t => (
+                <Box
+                  key={t._id}
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  mt={1}
+                >
+                  <Typography>{t.name}</Typography>
+                  <IconButton
+                    size="small"
+                    onClick={() => handleRemoveTutor(viewSubject.sid, t._id)}
+                    disabled={removingTutorTutor}
+                  >
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                </Box>
+              ))
+            : <Typography>No hay tutores asignados.</Typography>
+          }
           {removeTeacherError && (
             <Box mt={2}>
               <Alert severity="error">{removeTeacherError}</Alert>
+            </Box>
+          )}
+          {removeTutorError && (
+            <Box mt={2}>
+              <Alert severity="error">{removeTutorError.message || removeTutorError}</Alert>
             </Box>
           )}
         </DialogContent>
