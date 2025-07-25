@@ -5,52 +5,32 @@ import { useSubjectPut } from '../../shared/hooks/useSubjectPut'
 import { useSubjectDelete } from '../../shared/hooks/useSubjectDelete'
 import { useSubjectAddTeacher } from '../../shared/hooks/useSubjectAddTeacher'
 import { useUserGets } from '../../shared/hooks/useUserGets'
-import DeleteIcon from '@mui/icons-material/Delete'
-import Navbar from '../Navbar'
-import { Box, Typography, Avatar, CircularProgress, Alert, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Checkbox, FormControlLabel, Snackbar, IconButton, Autocomplete, Menu, MenuItem, Card, CardHeader, CardContent, CardActions, Grid } from '@mui/material'
-import MoreVertIcon from '@mui/icons-material/MoreVert'
 import useSubjectRemoveTeacher from '../../shared/hooks/useSubjectRemoveTeacher'
 import useSubjectRemoveTutor from '../../shared/hooks/useSubjectRemoveTutor'
+import useLogin from '../../shared/hooks/useLogin'
+import { Box, CircularProgress } from '@mui/material'
+import DeleteIcon from '@mui/icons-material/Delete'
+import Navbar from '../Navbar'
+import { Typography, Avatar, Alert, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Checkbox, FormControlLabel, Snackbar, IconButton, Autocomplete, Menu, MenuItem, Card, CardHeader, CardContent, CardActions, Grid } from '@mui/material'
+import MoreVertIcon from '@mui/icons-material/MoreVert'
 
 const SubjectList = () => {
-  const currentUser = JSON.parse(localStorage.getItem('user') || '{}')
-  const role = currentUser.role
-  const isAdminOrTeacher = ['ADMIN_ROLE', 'TEACHER_ROLE', 'ADMIN', 'TEACHER']
-    .includes((role || '').toUpperCase())
-
-  const { subjects, loading, error, refetch } = useSubjectGets()
+  const { userWithRole, loading: authLoading } = useLogin()
+  const { subjects, loading: subjectsLoading, error, refetch } = useSubjectGets()
   const { postSubject, loading: posting, error: postError, success: postSuccess } = useSubjectPost()
   const { putSubject, loading: putting, error: putError, success: putSuccess } = useSubjectPut()
   const { removeSubject, loading: deleting, error: deleteError, success: deleteSuccess } = useSubjectDelete()
   const { addTeacher, loading: addingTeacher, error: addTeacherError, success: addTeacherSuccess } = useSubjectAddTeacher()
   const { users, loading: usersLoading, error: usersError, refetch: refetchUsers } = useUserGets()
   const { removeTeacher, loading: removingTeacher, error: removeTeacherError, response: removeTeacherResponse } = useSubjectRemoveTeacher()
-  const { removeTutor, loading: removingTutorTutor, error: removeTutorError, response: removeTutorResponse } = useSubjectRemoveTutor()
-
-  const teachersList = Array.isArray(users)
-    ? users.filter(u => u.role === 'TEACHER_ROLE')
-    : []
+  const { removeTutor, loading: removingTutor, error: removeTutorError, response: removeTutorResponse } = useSubjectRemoveTutor()
 
   const [selectedTeacher, setSelectedTeacher] = useState(null)
   const [open, setOpen] = useState(false)
-  const [formValues, setFormValues] = useState({
-    name: '',
-    code: '',
-    grade: '',
-    img: '',
-    status: true,
-    description: ''
-  })
+  const [formValues, setFormValues] = useState({ name:'', code:'', grade:'', img:'', status:true, description:'' })
   const [editOpen, setEditOpen] = useState(false)
   const [editSid, setEditSid] = useState(null)
-  const [editFormValues, setEditFormValues] = useState({
-    name: '',
-    code: '',
-    grade: '',
-    img: '',
-    status: true,
-    description: ''
-  })
+  const [editFormValues, setEditFormValues] = useState({ name:'', code:'', grade:'', img:'', status:true, description:'' })
   const [viewOpen, setViewOpen] = useState(false)
   const [viewSubject, setViewSubject] = useState(null)
   const [addTeacherOpen, setAddTeacherOpen] = useState(false)
@@ -58,35 +38,24 @@ const SubjectList = () => {
   const [menuAnchorEl, setMenuAnchorEl] = useState(null)
   const [menuSubject, setMenuSubject] = useState(null)
 
-  useEffect(() => {
-    if (postSuccess) {
-      setOpen(false)
-      refetch()
-      setFormValues({ name: '', code: '', grade: '', img: '', status: true, description: '' })
-    }
-  }, [postSuccess, refetch])
+  useEffect(() => { if (postSuccess) { setOpen(false); refetch() } }, [postSuccess, refetch])
+  useEffect(() => { if (putSuccess) { setEditOpen(false); refetch() } }, [putSuccess, refetch])
+  useEffect(() => { if (addTeacherSuccess) { setAddTeacherOpen(false); refetch() } }, [addTeacherSuccess, refetch])
+  useEffect(() => { if (deleteSuccess) refetch() }, [deleteSuccess, refetch])
+  useEffect(() => { if (removeTeacherResponse?.success) { refetch(); setViewOpen(false) } }, [removeTeacherResponse, refetch])
+  useEffect(() => { if (removeTutorResponse?.success) { refetch(); setViewOpen(false) } }, [removeTutorResponse, refetch])
 
-  useEffect(() => {
-    if (putSuccess) {
-      setEditOpen(false)
-      refetch()
-      setEditSid(null)
-    }
-  }, [putSuccess, refetch])
+  if (authLoading) {
+    return (
+      <Box display="flex" justifyContent="center" mt={4}>
+        <CircularProgress />
+      </Box>
+    )
+  }
 
-  useEffect(() => {
-    if (addTeacherSuccess) {
-      setAddTeacherOpen(false)
-      setSelectedTeacher(null)
-      refetch()
-    }
-  }, [addTeacherSuccess, refetch])
-
-  useEffect(() => {
-    if (deleteSuccess) {
-      refetch()
-    }
-  }, [deleteSuccess, refetch])
+  const role = userWithRole?.role
+  const isAdminOrTeacher = ['ADMIN_ROLE','TEACHER_ROLE'].includes((role||'').toUpperCase())
+  const teachersList = Array.isArray(users) ? users.filter(u=>u.role==='TEACHER_ROLE') : []
 
   const handleRemoveTeacher = async (sid, teacherId) => {
     if (!window.confirm('¿Eliminar este profesor de la materia?')) return
@@ -97,20 +66,6 @@ const SubjectList = () => {
     if (!window.confirm('¿Eliminar este tutor de la materia?')) return
     await removeTutor(sid, tutorId)
   }
-
-  useEffect(() => {
-    if (removeTeacherResponse?.success) {
-      refetch()
-      setViewOpen(false)
-    }
-  }, [removeTeacherResponse, refetch])
-
-  useEffect(() => {
-    if (removeTutorResponse?.success) {
-      refetch()
-      setViewOpen(false)
-    }
-  }, [removeTutorResponse, refetch])
 
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
@@ -184,13 +139,13 @@ const SubjectList = () => {
     <>
       <Navbar />
       <Box p={4}>
-        { isAdminOrTeacher &&
+        {isAdminOrTeacher && (
           <Button variant="contained" onClick={handleOpen}>
             Agregar Materia
           </Button>
-        }
+        )}
       </Box>
-      {loading ? (
+      {subjectsLoading ? (
         <Box display="flex" justifyContent="center" mt={4}>
           <CircularProgress />
         </Box>
@@ -415,7 +370,7 @@ const SubjectList = () => {
                             <Box key={t._id} display="flex" justifyContent="space-between" mb={1}>
                               <Typography>{t.name}</Typography>
                               {isAdminOrTeacher && (
-                                <IconButton size="small" onClick={() => handleRemoveTutor(viewSubject.sid, t._id)} disabled={removingTutorTutor}>
+                                <IconButton size="small" onClick={() => handleRemoveTutor(viewSubject.sid, t._id)} disabled={removingTutor}>
                                   <DeleteIcon fontSize="small" />
                                 </IconButton>
                               )}
