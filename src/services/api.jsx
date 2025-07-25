@@ -161,6 +161,3 @@ export const removeTutorFromSubject = async (sid, tutorData) => {
         return { error: true, e };
     }
 };
-
-import axios from 'axios';
-
