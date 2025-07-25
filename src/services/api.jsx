@@ -66,15 +66,6 @@ export const updateProfilePicture = async (formData) => {
     }
 };
 
-export const getSubjectUsers = async (subjectId) => {
-  try {
-    const response = await apiClient.get(`/subject/${subjectId}`)
-    return response.data
-  } catch (e) {
-    return { error: true, e }
-  }
-}
-
 //subject 
 
 export const getAllSubjects = async () => {

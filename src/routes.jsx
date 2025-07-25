@@ -4,7 +4,6 @@ import AuthError from "./pages/auth/AuthError";
 import LoginPage from "./pages/auth/LoginPage";
 import UsersList from "./components/user/UsersList";
 import SubjectPage from "./pages/subject/SubjectPage";
-import SubjectUserPage from "./pages/subject/SubjectUserPage";
 
 
 const routes = [
@@ -14,7 +13,6 @@ const routes = [
   { path: "/usuarios", element: <UsersList /> },
   { path: "/*", element: <DashboardPage /> },
   { path: "/subjects", element: <SubjectPage /> },
-  { path: "/subjects/:subjectId/users", element: <SubjectUserPage /> },
 ];
 
 export default routes;
