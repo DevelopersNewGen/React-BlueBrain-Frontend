@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 const apiClient = axios.create({
     baseURL: `http://localhost:3000/BlueBrain/v1`,
     timeout: 3000,
@@ -28,8 +30,6 @@ apiClient.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
-
-
 export const getUserRoleByUid = async (uid) => {
     try {
         return await apiClient.get(`/users/role/${uid}`);
@@ -37,7 +37,6 @@ export const getUserRoleByUid = async (uid) => {
         return { error: true, e };
     }
 };
-
 
 export const getAllUsers = async () => {
   try {
@@ -72,6 +71,27 @@ export const getAllSubjects = async () => {
     try {
         return await apiClient.get('/subjects');
     } catch (e) {
+        return { error: true, e };
+    }
+};
+// reports 
+export const getAllReports = async () => {
+    try {
+        const response = await apiClient.get('/reports');
+        console.log('getAllReports response:', response);
+        return response;
+    } catch (e) {
+        console.error('getAllReports error:', e);
+        return { error: true, e };
+    }
+};
+
+export const updateReportStatus = async (reportId, status) => {
+    try {
+        const response = await apiClient.patch(`/reports/status/${reportId}`, { status });
+        return response;
+    } catch (e) {
+        console.error('updateReportStatus error:', e);
         return { error: true, e };
     }
 };
@@ -143,3 +163,4 @@ export const removeTutorFromSubject = async (sid, tutorData) => {
 };
 
 import axios from 'axios';
+

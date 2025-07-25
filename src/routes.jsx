@@ -3,6 +3,7 @@ import AuthCallback from "./pages/auth/AuthCallback";
 import AuthError from "./pages/auth/AuthError";
 import LoginPage from "./pages/auth/LoginPage";
 import UsersList from "./components/user/UsersList";
+import ReportsPage from "./pages/reports/ReportsPage";
 import SubjectPage from "./pages/subject/SubjectPage";
 
 
@@ -11,7 +12,9 @@ const routes = [
   { path: "/auth/callback", element: <AuthCallback /> },
   { path: "/auth/error", element: <AuthError /> },
   { path: "/usuarios", element: <UsersList /> },
-  { path: "/*", element: <DashboardPage /> },
+  { path: "/reportes", element: <ReportsPage /> },
+  { path: "/", element: <DashboardPage /> },
+  { path: "*", element: <DashboardPage /> },
   { path: "/subjects", element: <SubjectPage /> },
 ];
 

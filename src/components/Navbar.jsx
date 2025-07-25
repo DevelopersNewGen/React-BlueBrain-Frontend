@@ -10,6 +10,7 @@ const menuOptionsByRole = {
     { name: 'Usuarios', route: '/usuarios' },
     { name: 'Materias', route: '/subjects' },
     { name: 'Aplication' },
+    { name: 'Reportes', route: '/reportes' },
     { name: 'Material' },
   ],
   STUDENT_ROLE: [
@@ -23,6 +24,8 @@ const menuOptionsByRole = {
     { name: 'Material' },
     { name: 'Mi perfil' },
     { name: 'Estudiantes' },
+    { name: 'Materias' },
+    { name: 'Reportes', route: '/reportes' },
     { name: 'Materias', route: '/subjects' },
     { name: 'Mi Materia', route: '/subjectsUser' },
     { name: 'Reportes' },

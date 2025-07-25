@@ -3,10 +3,12 @@ import { DataGrid } from "@mui/x-data-grid";
 import { Box, Typography, CircularProgress, IconButton, Menu, MenuItem } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Navbar from '../Navbar';
+import { useNavigate } from 'react-router-dom';
 import useLogin from '../../shared/hooks/useLogin';
 import useUsers from '../../shared/hooks/useUsers';
 
 const UsersList = () => {
+  const navigate = useNavigate();
   const { users, loading, error } = useUsers();
   const { user, userWithRole, logout } = useLogin();
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -61,7 +63,7 @@ const UsersList = () => {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <Navbar user={user} userWithRole={userWithRole} />
+      <Navbar user={user} userWithRole={userWithRole} navigate={navigate} />
       <Box sx={{ mt: 4 }}>
         <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold' }}>
           Lista de Usuarios
