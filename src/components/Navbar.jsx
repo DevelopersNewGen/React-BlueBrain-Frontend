@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AppBar, Toolbar, Typography, Box, Button, Avatar, Menu, MenuItem, ListItemIcon, IconButton } from '@mui/material';
 import { Dashboard, Person, ExitToApp } from '@mui/icons-material';
 import UserProfile from './user/UserProfile';
@@ -42,7 +43,8 @@ const menuOptionsByRole = {
   ]
 };
 
-const Navbar = ({ user: propUser, userWithRole: propUserWithRole, navigate, onLogout }) => {
+const Navbar = ({ user: propUser, userWithRole: propUserWithRole, onLogout }) => {
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const [profileOpen, setProfileOpen] = useState(false);
   const open = Boolean(anchorEl);
@@ -90,9 +92,7 @@ const Navbar = ({ user: propUser, userWithRole: propUserWithRole, navigate, onLo
                 <Button
                   key={option.name}
                   sx={{ my: 2, color: 'white', display: 'block', alignItems: 'center', mx: 1, textTransform: 'none' }}
-                  onClick={() => {
-                    if (option.route && navigate) navigate(option.route);
-                  }}
+                  onClick={() => navigate(option.route)}
                 >
                   {option.name.toUpperCase()}
                 </Button>
@@ -158,4 +158,4 @@ const Navbar = ({ user: propUser, userWithRole: propUserWithRole, navigate, onLo
   );
 };
 
-export default Navbar;
+export default Navbar;
