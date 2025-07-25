@@ -7,7 +7,7 @@ import { useSubjectAddTeacher } from '../../shared/hooks/useSubjectAddTeacher'
 import { useUserGets } from '../../shared/hooks/useUserGets'
 import DeleteIcon from '@mui/icons-material/Delete'
 import Navbar from '../Navbar'
-import {Box,Typography,Table,TableHead,TableBody,TableRow,TableCell,TableContainer,Paper,Avatar,CircularProgress,Alert,Button,Dialog,DialogTitle,DialogContent,DialogActions,TextField,Checkbox,FormControlLabel,Snackbar,IconButton,Autocomplete,Menu,MenuItem} from '@mui/material'
+import { Box, Typography, Avatar, CircularProgress, Alert, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Checkbox, FormControlLabel, Snackbar, IconButton, Autocomplete, Menu, MenuItem, Card, CardHeader, CardContent, CardActions, Grid } from '@mui/material'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import useSubjectRemoveTeacher from '../../shared/hooks/useSubjectRemoveTeacher'
 import useSubjectRemoveTutor from '../../shared/hooks/useSubjectRemoveTutor'
@@ -220,40 +220,60 @@ const SubjectList = () => {
           <Typography variant="h4" gutterBottom>
             Lista de Materias
           </Typography>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Imagen</TableCell>
-                  <TableCell>Nombre</TableCell>
-                  <TableCell>Código</TableCell>
-                  <TableCell>Grado</TableCell>
-                  <TableCell>Docentes</TableCell>
-                  <TableCell>Estado</TableCell>
-                  <TableCell>Acciones</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {subjects.map(subj => (
-                  <TableRow key={subj.sid}>
-                    <TableCell>
-                      <Avatar src={subj.img} alt={subj.name} />
-                    </TableCell>
-                    <TableCell>{subj.name}</TableCell>
-                    <TableCell>{subj.code}</TableCell>
-                    <TableCell>{subj.grade}</TableCell>
-                    <TableCell>{subj.teachers?.length || 0}</TableCell>
-                    <TableCell>{subj.status ? 'Activo' : 'Inactivo'}</TableCell>
-                    <TableCell>
-                      <IconButton size="small" onClick={e => handleMenuOpen(e, subj)}>
-                        <MoreVertIcon />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          <Grid container spacing={2} justifyContent="center">
+            {subjects.map(subj => (
+              <Grid item
+                key={subj.sid}
+                xs={12}
+                sm={6}
+                md={20}
+                lg={9}
+              >
+                <Card
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: 260,
+                    width: 300,
+                    position: 'relative',
+                    p: 1
+                  }}
+                >
+                  <CardHeader
+                    avatar={<Avatar src={subj.img} alt={subj.name} />}
+                    title={subj.name}
+                    subheader={`Código: ${subj.code}`}
+                  />
+                  <CardContent sx={{ flexGrow: 1 }}>
+                    <Typography variant="body2" gutterBottom>
+                      Grado: {subj.grade}
+                    </Typography>
+                    <Typography variant="body2" gutterBottom>
+                      Docentes: {subj.teachers?.length || 0}
+                    </Typography>
+                    <Typography variant="body2">
+                      Estado: {subj.status ? 'Activo' : 'Inactivo'}
+                    </Typography>
+                  </CardContent>
+                  <CardActions
+                    sx={{
+                      position: 'absolute',
+                      bottom: 8,
+                      right: 8,
+                      p: 0
+                    }}
+                  >
+                    <IconButton
+                      size="large"
+                      onClick={e => handleMenuOpen(e, subj)}
+                    >
+                      <MoreVertIcon fontSize="large" />
+                    </IconButton>
+                  </CardActions>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
         </Box>
       )}
       <Dialog open={open} onClose={!posting ? handleClose : null}>
@@ -322,63 +342,96 @@ const SubjectList = () => {
           </Button>
         </DialogActions>
       </Dialog>
-      <Dialog open={viewOpen} onClose={handleViewClose}>
+      <Dialog
+        open={viewOpen}
+        onClose={handleViewClose}
+        fullWidth
+        maxWidth="md"
+      >
         <DialogTitle>Detalle Materia</DialogTitle>
         <DialogContent dividers>
-          <Typography gutterBottom>Nombre: {viewSubject?.name}</Typography>
-          <Typography gutterBottom>Código: {viewSubject?.code}</Typography>
-          <Typography gutterBottom>Grado: {viewSubject?.grade}</Typography>
-          <Typography gutterBottom>Descripción: {viewSubject?.description}</Typography>
-          <Typography gutterBottom>Estado: {viewSubject?.status ? 'Activo' : 'Inactivo'}</Typography>
-          {viewSubject?.img && (
-            <Box mt={2} display="flex" justifyContent="center">
-              <Avatar src={viewSubject.img} alt={viewSubject.name} sx={{ width: 100, height: 100 }} />
-            </Box>
-          )}
-          <Typography variant="h6" mt={2}>Docentes asignados</Typography>
-          {viewSubject?.teachers?.length > 0
-            ? viewSubject.teachers.map(t => (
-                <Box
-                  key={t._id}
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="space-between"
-                  mt={1}
-                >
-                  <Typography>{t.name}</Typography>
-                  <IconButton
-                    size="small"
-                    onClick={() => handleRemoveTeacher(viewSubject.sid, t._id)}
-                    disabled={removingTeacher}
-                  >
-                    <DeleteIcon fontSize="small" />
-                  </IconButton>
-                </Box>
-              ))
-            : <Typography>No hay docentes asignados.</Typography>
-          }
-          <Typography variant="h6" mt={2}>Tutores asignados</Typography>
-          {viewSubject?.tutors?.length > 0
-            ? viewSubject.tutors.map(t => (
-                <Box
-                  key={t._id}
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="space-between"
-                  mt={1}
-                >
-                  <Typography>{t.name}</Typography>
-                  <IconButton
-                    size="small"
-                    onClick={() => handleRemoveTutor(viewSubject.sid, t._id)}
-                    disabled={removingTutorTutor}
-                  >
-                    <DeleteIcon fontSize="small" />
-                  </IconButton>
-                </Box>
-              ))
-            : <Typography>No hay tutores asignados.</Typography>
-          }
+          <Grid container spacing={2} alignItems="flex-start">
+            {/* Imagen grande a la izquierda */}
+            <Grid item xs={12} md={6}>
+              <Card>
+                <CardHeader title="Imagen de la Materia" />
+                <CardContent sx={{ display: 'flex', justifyContent: 'center' }}>
+                  {viewSubject?.img && (
+                    <Avatar
+                      src={viewSubject.img}
+                      alt={viewSubject.name}
+                      variant="square"
+                      sx={{
+                        width: '100%',
+                        height: 300,
+                        objectFit: 'contain'
+                      }}
+                    />
+                  )}
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* Columna de información y asignaciones */}
+            <Grid item xs={12} md={6}>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <Card>
+                    <CardHeader title="Información General" />
+                    <CardContent>
+                      <Typography gutterBottom><strong>Nombre:</strong> {viewSubject?.name}</Typography>
+                      <Typography gutterBottom><strong>Código:</strong> {viewSubject?.code}</Typography>
+                      <Typography gutterBottom><strong>Grado:</strong> {viewSubject?.grade}</Typography>
+                      <Typography gutterBottom><strong>Descripción:</strong> {viewSubject?.description}</Typography>
+                      <Typography gutterBottom><strong>Estado:</strong> {viewSubject?.status ? 'Activo' : 'Inactivo'}</Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={12}>
+                  <Card>
+                    <CardHeader title={`Docentes Asignados (${viewSubject?.teachers?.length || 0})`} />
+                    <CardContent>
+                      {viewSubject?.teachers?.length > 0
+                        ? viewSubject.teachers.map(t => (
+                            <Box key={t._id} display="flex" justifyContent="space-between" mb={1}>
+                              <Typography>{t.name}</Typography>
+                              {isAdminOrTeacher && (
+                                <IconButton size="small" onClick={() => handleRemoveTeacher(viewSubject.sid, t._id)} disabled={removingTeacher}>
+                                  <DeleteIcon fontSize="small" />
+                                </IconButton>
+                              )}
+                            </Box>
+                          ))
+                        : <Typography>No hay docentes asignados.</Typography>
+                      }
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={12}>
+                  <Card>
+                    <CardHeader title={`Tutores Asignados (${viewSubject?.tutors?.length || 0})`} />
+                    <CardContent>
+                      {viewSubject?.tutors?.length > 0
+                        ? viewSubject.tutors.map(t => (
+                            <Box key={t._id} display="flex" justifyContent="space-between" mb={1}>
+                              <Typography>{t.name}</Typography>
+                              {isAdminOrTeacher && (
+                                <IconButton size="small" onClick={() => handleRemoveTutor(viewSubject.sid, t._id)} disabled={removingTutorTutor}>
+                                  <DeleteIcon fontSize="small" />
+                                </IconButton>
+                              )}
+                            </Box>
+                          ))
+                        : <Typography>No hay tutores asignados.</Typography>
+                      }
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
+            </Grid>
+          </Grid>
+
+          {/* Errores */}
           {removeTeacherError && (
             <Box mt={2}>
               <Alert severity="error">{removeTeacherError}</Alert>
