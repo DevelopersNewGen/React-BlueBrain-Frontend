@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { getAllSubjects, getSubjectById } from '../../services/api';
 
 export const useSubjectGets = () => {
@@ -6,28 +6,31 @@ export const useSubjectGets = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const fetchAllSubjects = async () => {
-        setLoading(true);
-        setError(null);
+    const fetchAllSubjects = useCallback(async () => {
+        setLoading(true)
+        setError(null)
         try {
-            const response = await getAllSubjects();
+            const response = await getAllSubjects()
             if (response.error) {
-                setError(response.e?.response?.data?.message || 'Error al obtener las materias');
-                setSubjects([]);
+                setError(response.message || 'Error al cargar materias')
             } else {
-                setSubjects(response.data?.data || []);
+                const list = Array.isArray(response.data)
+                    ? response.data
+                    : Array.isArray(response.data?.data)
+                        ? response.data.data
+                        : []
+                setSubjects(list)
             }
         } catch (err) {
-            setError('Error inesperado al obtener las materias');
-            setSubjects([]);
+            setError('Error inesperado al cargar materias')
         } finally {
-            setLoading(false);
+            setLoading(false)
         }
-    };
+    }, []);
 
     useEffect(() => {
         fetchAllSubjects();
-    }, []);
+    }, [fetchAllSubjects]);
 
     return {
         subjects,

@@ -36,14 +36,15 @@ const SubjectList = () => {
     code: '',
     grade: '',
     img: '',
-    status: true
+    status: true,
+    description: ''
   });
 
   useEffect(() => {
     if (postSuccess) {
       setOpen(false);
       refetch();
-      setFormValues({ name: '', code: '', grade: '', img: '', status: true });
+      setFormValues({ name: '', code: '', grade: '', img: '', status: true, description: '' });
     }
   }, [postSuccess, refetch]);
 
@@ -88,7 +89,7 @@ const SubjectList = () => {
             </Box>
           </Alert>
         </Box>
-      ) : subjects.length === 0 ? (
+      ) : (!Array.isArray(subjects) || subjects.length === 0) ? (
         <Box m={4}>
           <Alert severity="info">No hay materias registradas.</Alert>
         </Box>
@@ -110,7 +111,7 @@ const SubjectList = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {subjects.map((subj) => (
+                {Array.isArray(subjects) && subjects.map((subj) => (
                   <TableRow key={subj.sid}>
                     <TableCell>
                       <Avatar src={subj.img} alt={subj.name} />
@@ -155,6 +156,16 @@ const SubjectList = () => {
             name="grade"
             fullWidth
             value={formValues.grade}
+            onChange={handleChange}
+          />
+          <TextField
+            margin="dense"
+            label="Descripción"
+            name="description"
+            fullWidth
+            multiline
+            rows={3}
+            value={formValues.description}
             onChange={handleChange}
           />
           <TextField
