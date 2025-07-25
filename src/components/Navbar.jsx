@@ -10,7 +10,7 @@ const menuOptionsByRole = {
     { name: 'Usuarios', route: '/usuarios' },
     { name: 'Materias', route: '/subjects' },
     { name: 'Aplication' },
-    { name: 'Material' },
+    { name: 'Material', route: '/materials' }
   ],
   STUDENT_ROLE: [
     { name: 'Material' },
@@ -20,7 +20,7 @@ const menuOptionsByRole = {
     { name: 'Tutorial' }
   ],
   TEACHER_ROLE: [
-    { name: 'Material' },
+    { name: 'Material', route: '/materials' },
     { name: 'Mi perfil' },
     { name: 'Estudiantes' },
     { name: 'Materias', route: '/subjects' },
@@ -30,7 +30,7 @@ const menuOptionsByRole = {
     { name: 'Aplication' }
   ],
   TUTOR_ROLE: [
-    { name: 'Material' },
+    { name: 'Material', route: '/materials' },
     { name: 'Mi perfil' },
     { name: 'Tutoreados' },
     { name: 'Solicitudes' },

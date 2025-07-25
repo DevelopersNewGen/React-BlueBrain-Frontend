@@ -5,6 +5,7 @@ import LoginPage from "./pages/auth/LoginPage";
 import UsersList from "./components/user/UsersList";
 import SubjectPage from "./pages/subject/SubjectPage";
 import SubjectUserPage from "./pages/subject/SubjectUserPage";
+import MaterialPage from "./pages/material/MaterialPage";
 
 
 const routes = [
@@ -15,6 +16,7 @@ const routes = [
   { path: "/*", element: <DashboardPage /> },
   { path: "/subjects", element: <SubjectPage /> },
   { path: "/subjects/:subjectId/users", element: <SubjectUserPage /> },
+  { path: "/materials", element: <MaterialPage /> },
 ];
 
 export default routes;
