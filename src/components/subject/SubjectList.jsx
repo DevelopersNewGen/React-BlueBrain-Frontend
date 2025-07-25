@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSubjectGets } from '../../shared/hooks/useSubjectGets';
 import { useSubjectPost } from '../../shared/hooks/UseSubjectPost';
 import { useSubjectPut } from '../../shared/hooks/useSubjectPut';
+import { useSubjectDelete } from '../../shared/hooks/useSubjectDelete';
 import {
   Box,
   Typography,
@@ -28,12 +29,21 @@ import {
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import DeleteIcon from '@mui/icons-material/Delete';
 import Navbar from '../Navbar';
 
 const SubjectList = () => {
   const { subjects, loading, error, refetch } = useSubjectGets();
   const { postSubject, loading: posting, error: postError, success: postSuccess } = useSubjectPost();
   const { putSubject, loading: putting, error: putError, success: putSuccess } = useSubjectPut();
+  const { removeSubject, loading: deleting, error: deleteError, success: deleteSuccess } = useSubjectDelete();
+
+  // Añadir efecto para refrescar la lista tras eliminar
+  useEffect(() => {
+    if (deleteSuccess) {
+      refetch();
+    }
+  }, [deleteSuccess, refetch]);
 
   const [open, setOpen] = useState(false);
   const [formValues, setFormValues] = useState({
@@ -111,6 +121,11 @@ const SubjectList = () => {
   };
   const handleViewClose = () => setViewOpen(false);
 
+  const handleDelete = async sid => {
+    if (!window.confirm('¿Estás seguro de eliminar esta materia?')) return;
+    await removeSubject(sid);
+  };
+  
   return (
     <>
       <Navbar />
@@ -163,7 +178,7 @@ const SubjectList = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {subjects.map((subj) => (
+                {subjects.map(subj => (
                   <TableRow key={subj.sid}>
                     <TableCell>
                       <Avatar src={subj.img} alt={subj.name} />
@@ -179,6 +194,14 @@ const SubjectList = () => {
                       </IconButton>
                       <IconButton size="small" onClick={() => handleEditOpen(subj)} aria-label="editar">
                         <EditIcon />
+                      </IconButton>
+                      <IconButton
+                        size="small"
+                        onClick={() => handleDelete(subj.sid)}
+                        aria-label="eliminar"
+                        disabled={deleting}
+                      >
+                        <DeleteIcon />
                       </IconButton>
                     </TableCell>
                   </TableRow>
@@ -350,13 +373,26 @@ const SubjectList = () => {
         </DialogActions>
       </Dialog>
 
+      {deleteError && (
+        <Box mt={2}>
+          <Alert severity="error">{deleteError}</Alert>
+        </Box>
+      )}
+
       <Snackbar
-        open={postSuccess || putSuccess}
+        open={postSuccess || putSuccess || deleteSuccess}
         autoHideDuration={3000}
-        onClose={() => { setOpen(false); setEditOpen(false); }}
+        onClose={() => {
+          setOpen(false);
+          setEditOpen(false);
+        }}
       >
         <Alert severity="success">
-          {postSuccess ? 'Materia creada exitosamente' : 'Materia actualizada exitosamente'}
+          {postSuccess
+            ? 'Materia creada exitosamente'
+            : putSuccess
+            ? 'Materia actualizada exitosamente'
+            : 'Materia eliminada exitosamente'}
         </Alert>
       </Snackbar>
     </>
