@@ -4,6 +4,7 @@ import AuthError from "./pages/auth/AuthError";
 import LoginPage from "./pages/auth/LoginPage";
 import UsersList from "./components/user/UsersList";
 import ReportsPage from "./pages/reports/ReportsPage";
+import SubjectPage from "./pages/subject/SubjectPage";
 
 
 const routes = [
@@ -14,6 +15,7 @@ const routes = [
   { path: "/reportes", element: <ReportsPage /> },
   { path: "/", element: <DashboardPage /> },
   { path: "*", element: <DashboardPage /> },
+  { path: "/subjects", element: <SubjectPage /> },
 ];
 
 export default routes;

@@ -1,37 +1,28 @@
-import React, { useEffect } from 'react'; 
+import React from 'react'; 
 import { 
   Dialog, 
   DialogTitle, 
   DialogContent, 
   DialogActions, 
   Button, 
-  Avatar, 
   Typography, 
   Box, 
   Divider 
 } from '@mui/material';
-import { AccountCircle } from '@mui/icons-material';
+
+import useUserProfile from '../../shared/hooks/useUserProfile.jsx';
 
 const UserProfile = ({ open, onClose, user, triggerRef }) => {
-  const handleClose = () => {
-    onClose();
-  };
-
-  useEffect(() => {
-    if (!open && triggerRef?.current) {
-      triggerRef.current.focus();
-    }
-  }, [open, triggerRef]);
-
-
-  useEffect(() => {
-    const root = document.getElementById('root');
-    if (open) {
-      root.setAttribute('inert', 'true');
-    } else {
-      root.removeAttribute('inert');
-    }
-  }, [open]);
+  const {
+    loading,
+    preview,
+    error,
+    profilePic,
+    fileInputRef,
+    handleFileChange,
+    handleUpload,
+    handleClose,
+  } = useUserProfile({ open, onClose, user, triggerRef });
 
   return (
     <Dialog 
@@ -51,13 +42,36 @@ const UserProfile = ({ open, onClose, user, triggerRef }) => {
           gap={3}
           py={2}
         >
-          <Avatar 
-            sx={{ width: 100, height: 100 }}
-            src={user?.profilePicture || user?.img}
+          <img
+            src={preview || profilePic}
             alt={user?.name || 'Usuario'}
-          >
-            {!user?.profilePicture && !user?.img && <AccountCircle sx={{ fontSize: 60 }} />}
-          </Avatar>
+            style={{ width: 100, height: 100, objectFit: 'cover', borderRadius: '50%' }}
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = 'https://res.cloudinary.com/dibe6yrzf/image/upload/v1747668225/perfil-de-usuario_cxmmxq.png';
+            }}
+          />
+          <Box mt={2} display="flex" flexDirection="column" alignItems="center" gap={1}>
+            <input
+              type="file"
+              accept="image/*"
+              ref={fileInputRef}
+              style={{ display: 'none' }}
+              onChange={handleFileChange}
+            />
+            <Button variant="outlined" size="small" onClick={() => fileInputRef.current.click()} disabled={loading}>
+              Seleccionar foto
+            </Button>
+            {preview && (
+              <Button variant="contained" size="small" color="primary" onClick={handleUpload} disabled={loading}>
+                {loading ? 'Actualizando...' : 'Actualizar foto'}
+              </Button>
+            )}
+            {error && (
+              <Typography color="error" variant="body2">{error}</Typography>
+            )}
+          </Box>
+          
           <Box width="100%" maxWidth={400}>
             <Box mb={2}>
               <Typography variant="subtitle2" color="text.secondary">

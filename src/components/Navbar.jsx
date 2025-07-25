@@ -8,13 +8,17 @@ import useLogin from '../shared/hooks/useLogin';
 const menuOptionsByRole = {
   ADMIN_ROLE: [
     { name: 'Usuarios', route: '/usuarios' },
+    { name: 'Materias', route: '/subjects' },
+    { name: 'Aplication' },
     { name: 'Reportes', route: '/reportes' },
+    { name: 'Material' },
   ],
   STUDENT_ROLE: [
     { name: 'Material' },
     { name: 'Mi perfil' },
-    { name: 'Materias' },
-    { name: 'Solicitudes' }
+    { name: 'Materias', route: '/subjects' },
+    { name: 'Aplication' },
+    { name: 'Tutorial' }
   ],
   TEACHER_ROLE: [
     { name: 'Material' },
@@ -22,14 +26,19 @@ const menuOptionsByRole = {
     { name: 'Estudiantes' },
     { name: 'Materias' },
     { name: 'Reportes', route: '/reportes' },
-    { name: 'Solicitudes' }
+    { name: 'Materias', route: '/subjects' },
+    { name: 'Mi Materia', route: '/subjectsUser' },
+    { name: 'Reportes' },
+    { name: 'Solicitudes' },
+    { name: 'Aplication' }
   ],
   TUTOR_ROLE: [
     { name: 'Material' },
     { name: 'Mi perfil' },
     { name: 'Tutoreados' },
-    { name: 'Materias' },
-    { name: 'Solicitudes' }
+    { name: 'Solicitudes' },
+    { name: 'Materias', route: '/subjects' },
+    { name: 'Aplication' }
   ]
 };
 
