@@ -15,7 +15,6 @@ import useSubjectRemoveTutor from '../../shared/hooks/useSubjectRemoveTutor'
 const SubjectList = () => {
   const currentUser = JSON.parse(localStorage.getItem('user') || '{}')
   const role = currentUser.role
-  console.log('User role:', role)  
   const isAdminOrTeacher = ['ADMIN_ROLE', 'TEACHER_ROLE', 'ADMIN', 'TEACHER']
     .includes((role || '').toUpperCase())
 
@@ -486,20 +485,26 @@ const SubjectList = () => {
         <MenuItem onClick={() => { handleViewOpen(menuSubject); handleMenuClose() }}>
           Ver detalles
         </MenuItem>
-        { isAdminOrTeacher && <>
+        {isAdminOrTeacher && (
           <MenuItem onClick={() => { handleEditOpen(menuSubject); handleMenuClose() }}>
             Editar
           </MenuItem>
+        )}
+        {isAdminOrTeacher && (
           <MenuItem onClick={() => { handleAddTeacherOpen(menuSubject.sid); handleMenuClose() }}>
             Agregar profesor
           </MenuItem>
+        )}
+        {isAdminOrTeacher && (
           <MenuItem onClick={() => { handleViewOpen(menuSubject); handleMenuClose() }}>
             Eliminar profesor
           </MenuItem>
+        )}
+        {isAdminOrTeacher && (
           <MenuItem onClick={() => { handleDelete(menuSubject.sid); handleMenuClose() }}>
             Eliminar materia
           </MenuItem>
-        </> }
+        )}
       </Menu>
       {deleteError && (
         <Box mt={2}>

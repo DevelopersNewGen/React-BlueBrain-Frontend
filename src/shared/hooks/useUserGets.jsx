@@ -11,7 +11,6 @@ export const useUserGets = () => {
     setError(null)
     try {
       const res = await getAllUsers()
-      console.log('getAllUsers →', res)
       if (!res.success) {
         setError(res.message || 'Error al cargar usuarios')
         setUsers([])

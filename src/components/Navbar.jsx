@@ -24,6 +24,7 @@ const menuOptionsByRole = {
     { name: 'Mi perfil' },
     { name: 'Estudiantes' },
     { name: 'Materias', route: '/subjects' },
+    { name: 'Mi Materia', route: '/subjectsUser' },
     { name: 'Reportes' },
     { name: 'Solicitudes' },
     { name: 'Aplication' }
