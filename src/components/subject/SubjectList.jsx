@@ -35,6 +35,7 @@ import {
   IconButton,
   Autocomplete
 } from '@mui/material'
+import useSubjectRemoveTeacher from '../../shared/hooks/useSubjectRemoveTeacher'
 
 const SubjectList = () => {
   const { subjects, loading, error, refetch } = useSubjectGets()
@@ -43,6 +44,7 @@ const SubjectList = () => {
   const { removeSubject, loading: deleting, error: deleteError, success: deleteSuccess } = useSubjectDelete()
   const { addTeacher, loading: addingTeacher, error: addTeacherError, success: addTeacherSuccess } = useSubjectAddTeacher()
   const { users, loading: usersLoading, error: usersError, refetch: refetchUsers } = useUserGets()
+  const { removeTeacher, loading: removingTeacher, error: removeTeacherError, response: removeTeacherResponse } = useSubjectRemoveTeacher()
 
   const teachersList = Array.isArray(users)
     ? users.filter(u => u.role === 'TEACHER_ROLE')
@@ -102,6 +104,20 @@ const SubjectList = () => {
       refetch()
     }
   }, [deleteSuccess, refetch])
+
+  // borra un docente de la materia
+  const handleRemoveTeacher = async (sid, teacherId) => {
+    if (!window.confirm('¿Eliminar este profesor de la materia?')) return
+    await removeTeacher(sid, teacherId)
+  }
+
+  // tras borrar, recarga la lista
+  useEffect(() => {
+    if (removeTeacherResponse?.success) {
+      refetch()
+      setViewOpen(false)
+    }
+  }, [removeTeacherResponse, refetch])
 
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
@@ -321,6 +337,33 @@ const SubjectList = () => {
           {viewSubject?.img && (
             <Box mt={2} display="flex" justifyContent="center">
               <Avatar src={viewSubject.img} alt={viewSubject.name} sx={{ width: 100, height: 100 }} />
+            </Box>
+          )}
+          <Typography variant="h6" mt={2}>Docentes asignados</Typography>
+          {viewSubject?.teachers?.length > 0
+            ? viewSubject.teachers.map(t => (
+                <Box
+                  key={t._id}
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  mt={1}
+                >
+                  <Typography>{t.name}</Typography>
+                  <IconButton
+                    size="small"
+                    onClick={() => handleRemoveTeacher(viewSubject.sid, t._id)}
+                    disabled={removingTeacher}
+                  >
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                </Box>
+              ))
+            : <Typography>No hay docentes asignados.</Typography>
+          }
+          {removeTeacherError && (
+            <Box mt={2}>
+              <Alert severity="error">{removeTeacherError}</Alert>
             </Box>
           )}
         </DialogContent>
