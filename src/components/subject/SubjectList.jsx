@@ -10,31 +10,8 @@ import EditIcon from '@mui/icons-material/Edit'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import DeleteIcon from '@mui/icons-material/Delete'
 import Navbar from '../Navbar'
-import {
-  Box,
-  Typography,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  TableContainer,
-  Paper,
-  Avatar,
-  CircularProgress,
-  Alert,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  Checkbox,
-  FormControlLabel,
-  Snackbar,
-  IconButton,
-  Autocomplete
-} from '@mui/material'
+import {Box,Typography,Table,TableHead,TableBody,TableRow,TableCell,TableContainer,Paper,Avatar,CircularProgress,Alert,Button,Dialog,DialogTitle,DialogContent,DialogActions,TextField,Checkbox,FormControlLabel,Snackbar,IconButton,Autocomplete,Menu,MenuItem} from '@mui/material'
+import MoreVertIcon from '@mui/icons-material/MoreVert'
 import useSubjectRemoveTeacher from '../../shared/hooks/useSubjectRemoveTeacher'
 
 const SubjectList = () => {
@@ -74,6 +51,8 @@ const SubjectList = () => {
   const [viewSubject, setViewSubject] = useState(null)
   const [addTeacherOpen, setAddTeacherOpen] = useState(false)
   const [addTeacherSid, setAddTeacherSid] = useState(null)
+  const [menuAnchorEl, setMenuAnchorEl] = useState(null)
+  const [menuSubject, setMenuSubject] = useState(null)
 
   useEffect(() => {
     if (postSuccess) {
@@ -105,13 +84,11 @@ const SubjectList = () => {
     }
   }, [deleteSuccess, refetch])
 
-  // borra un docente de la materia
   const handleRemoveTeacher = async (sid, teacherId) => {
     if (!window.confirm('¿Eliminar este profesor de la materia?')) return
     await removeTeacher(sid, teacherId)
   }
 
-  // tras borrar, recarga la lista
   useEffect(() => {
     if (removeTeacherResponse?.success) {
       refetch()
@@ -178,6 +155,15 @@ const SubjectList = () => {
     await addTeacher(addTeacherSid, teacherId)
   }
 
+  const handleMenuOpen = (e, subj) => {
+    setMenuAnchorEl(e.currentTarget)
+    setMenuSubject(subj)
+  }
+  const handleMenuClose = () => {
+    setMenuAnchorEl(null)
+    setMenuSubject(null)
+  }
+
   return (
     <>
       <Navbar />
@@ -240,17 +226,8 @@ const SubjectList = () => {
                     <TableCell>{subj.teachers?.length || 0}</TableCell>
                     <TableCell>{subj.status ? 'Activo' : 'Inactivo'}</TableCell>
                     <TableCell>
-                      <IconButton size="small" onClick={() => handleViewOpen(subj)}>
-                        <VisibilityIcon />
-                      </IconButton>
-                      <IconButton size="small" onClick={() => handleEditOpen(subj)}>
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton size="small" onClick={() => handleAddTeacherOpen(subj.sid)}>
-                        <PersonAddIcon />
-                      </IconButton>
-                      <IconButton size="small" onClick={() => handleDelete(subj.sid)} disabled={deleting}>
-                        <DeleteIcon />
+                      <IconButton size="small" onClick={e => handleMenuOpen(e, subj)}>
+                        <MoreVertIcon />
                       </IconButton>
                     </TableCell>
                   </TableRow>
@@ -402,6 +379,31 @@ const SubjectList = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      <Menu
+        anchorEl={menuAnchorEl}
+        open={Boolean(menuAnchorEl)}
+        onClose={handleMenuClose}
+      >
+        <MenuItem onClick={() => { handleViewOpen(menuSubject);   handleMenuClose() }}>
+          Ver detalles
+        </MenuItem>
+        <MenuItem onClick={() => { handleEditOpen(menuSubject);   handleMenuClose() }}>
+          Editar
+        </MenuItem>
+        <MenuItem onClick={() => { handleAddTeacherOpen(menuSubject.sid); handleMenuClose() }}>
+          Agregar profesor
+        </MenuItem>
+        <MenuItem onClick={() => {
+            handleViewOpen(menuSubject)
+            handleMenuClose()
+          }}
+        >
+          Eliminar profesor
+        </MenuItem>
+        <MenuItem onClick={() => { handleDelete(menuSubject.sid); handleMenuClose() }}>
+          Eliminar materia
+        </MenuItem>
+      </Menu>
       {deleteError && (
         <Box mt={2}>
           <Alert severity="error">{deleteError}</Alert>
