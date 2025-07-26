@@ -69,7 +69,8 @@ export const updateProfilePicture = async (formData) => {
 
 export const getAllSubjects = async () => {
     try {
-        return await apiClient.get('/subjects');
+        const response = await apiClient.get('/subjects');
+        return response.data;
     } catch (e) {
         return { error: true, e };
     }
@@ -179,6 +180,24 @@ export const requestTutor = async (formData) => {
 export const getAllApplications = async () => {
     try {
         const response = await apiClient.get('/applications');
+        return response.data;
+    } catch (e) {
+        return { error: true, e };
+    }
+};
+
+export const getApplicationsByUser = async (userId) => {
+    try {
+        const response = await apiClient.get(`/applications/user/${userId}`);
+        return response.data;
+    } catch (e) {
+        return { error: true, e };
+    }
+};
+
+export const getApplicationsBySubject = async (subjectId) => {
+    try {
+        const response = await apiClient.get(`/applications/subject/${subjectId}`);
         return response.data;
     } catch (e) {
         return { error: true, e };
