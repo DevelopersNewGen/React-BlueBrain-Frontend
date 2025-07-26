@@ -161,3 +161,47 @@ export const removeTutorFromSubject = async (sid, tutorData) => {
         return { error: true, e };
     }
 };
+
+// Applications
+export const requestTutor = async (formData) => {
+    try {
+        const response = await apiClient.post('/applications/requestTutor', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        return response.data;
+    } catch (e) {
+        return { error: true, e };
+    }
+};
+
+export const getAllApplications = async () => {
+    try {
+        const response = await apiClient.get('/applications');
+        return response.data;
+    } catch (e) {
+        return { error: true, e };
+    }
+};
+
+export const updateApplicationStatus = async (applicationId, status, responseMessage = '') => {
+    try {
+        console.log('Updating application status:', { applicationId, status, responseMessage });
+        
+        const response = await apiClient.patch(`/applications/approve/${applicationId}`, {
+            status,
+            responseMessage
+        });
+        
+        console.log('Update response:', response.data);
+        return response.data;
+    } catch (e) {
+        console.error('Error updating application status:', e.response?.data || e.message);
+        return { 
+            error: true, 
+            e,
+            message: e.response?.data?.msg || e.message || 'Error al actualizar la aplicación'
+        };
+    }
+};

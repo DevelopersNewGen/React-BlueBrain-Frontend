@@ -8,6 +8,7 @@ import { useUserGets } from '../../shared/hooks/useUserGets'
 import useSubjectRemoveTeacher from '../../shared/hooks/useSubjectRemoveTeacher'
 import useSubjectRemoveTutor from '../../shared/hooks/useSubjectRemoveTutor'
 import useLogin from '../../shared/hooks/useLogin'
+import ApplicationRequest from '../application/ApplicationRequest'
 import { Box, CircularProgress } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
 import Navbar from '../Navbar'
@@ -37,6 +38,8 @@ const SubjectList = () => {
   const [addTeacherSid, setAddTeacherSid] = useState(null)
   const [menuAnchorEl, setMenuAnchorEl] = useState(null)
   const [menuSubject, setMenuSubject] = useState(null)
+  const [applicationOpen, setApplicationOpen] = useState(false)
+  const [applicationSubject, setApplicationSubject] = useState(null)
 
   useEffect(() => { if (postSuccess) { setOpen(false); refetch() } }, [postSuccess, refetch])
   useEffect(() => { if (putSuccess) { setEditOpen(false); refetch() } }, [putSuccess, refetch])
@@ -55,6 +58,7 @@ const SubjectList = () => {
 
   const role = userWithRole?.role
   const isAdminOrTeacher = ['ADMIN_ROLE','TEACHER_ROLE'].includes((role||'').toUpperCase())
+  const isStudent = (role||'').toUpperCase() === 'STUDENT_ROLE'
   const teachersList = Array.isArray(users) ? users.filter(u=>u.role==='TEACHER_ROLE') : []
 
   const handleRemoveTeacher = async (sid, teacherId) => {
@@ -133,6 +137,17 @@ const SubjectList = () => {
   const handleMenuClose = () => {
     setMenuAnchorEl(null)
     setMenuSubject(null)
+  }
+
+  const handleSendApplication = async (subjectSid) => {
+    const subject = subjects.find(s => s.sid === subjectSid)
+    setApplicationSubject(subject)
+    setApplicationOpen(true)
+  }
+
+  const handleApplicationClose = () => {
+    setApplicationOpen(false)
+    setApplicationSubject(null)
   }
 
   return (
@@ -440,6 +455,11 @@ const SubjectList = () => {
         <MenuItem onClick={() => { handleViewOpen(menuSubject); handleMenuClose() }}>
           Ver detalles
         </MenuItem>
+        {isStudent && (
+          <MenuItem onClick={() => { handleSendApplication(menuSubject.sid); handleMenuClose() }}>
+            Enviar Aplicación
+          </MenuItem>
+        )}
         {isAdminOrTeacher && (
           <MenuItem onClick={() => { handleEditOpen(menuSubject); handleMenuClose() }}>
             Editar
@@ -475,6 +495,13 @@ const SubjectList = () => {
             : 'Materia eliminada exitosamente'}
         </Alert>
       </Snackbar>
+      
+      {/* Application Request Dialog */}
+      <ApplicationRequest
+        open={applicationOpen}
+        onClose={handleApplicationClose}
+        subject={applicationSubject}
+      />
     </>
   )
 }
