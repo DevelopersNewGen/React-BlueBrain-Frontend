@@ -163,7 +163,6 @@ export const removeTutorFromSubject = async (sid, tutorData) => {
     }
 };
 
-// Applications
 export const requestTutor = async (formData) => {
     try {
         const response = await apiClient.post('/applications/requestTutor', formData, {

@@ -10,7 +10,6 @@ export const useApplicationFilters = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
-  // Obtener aplicaciones por usuario
   const fetchApplicationsByUser = async (userId) => {
     if (!userId) return
 
@@ -23,7 +22,6 @@ export const useApplicationFilters = () => {
       if (response.success) {
         setUserApplications(response.applications || [])
       } else if (response.error && response.e?.response?.status === 404) {
-        // 404 significa que no hay aplicaciones, no es un error real
         setUserApplications([])
         setError(null)
       } else {
@@ -39,7 +37,6 @@ export const useApplicationFilters = () => {
     }
   }
 
-  // Obtener aplicaciones por materia
   const fetchApplicationsBySubject = async (subjectId) => {
     if (!subjectId) return
 
@@ -52,7 +49,6 @@ export const useApplicationFilters = () => {
       if (response.success) {
         setSubjectApplications(response.applications || [])
       } else if (response.error && response.e?.response?.status === 404) {
-        // 404 significa que no hay aplicaciones, no es un error real
         setSubjectApplications([])
         setError(null)
       } else {
@@ -68,7 +64,6 @@ export const useApplicationFilters = () => {
     }
   }
 
-  // Limpiar estados
   const clearUserApplications = () => {
     setUserApplications([])
     setError(null)

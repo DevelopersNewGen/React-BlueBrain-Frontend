@@ -41,7 +41,6 @@ const ApplicationsByUser = () => {
   const [selectedUser, setSelectedUser] = useState(null)
   const [loadingUsers, setLoadingUsers] = useState(false)
 
-  // Cargar usuarios al montar el componente
   useEffect(() => {
     const loadUsers = async () => {
       setLoadingUsers(true)
@@ -120,7 +119,6 @@ const ApplicationsByUser = () => {
         Aplicaciones por Usuario
       </Typography>
 
-      {/* Selector de usuario */}
       <Paper sx={{ p: 2, mb: 3 }}>
         <Autocomplete
           options={users}
@@ -165,7 +163,6 @@ const ApplicationsByUser = () => {
         />
       </Paper>
 
-      {/* Resultados */}
       {loading && (
         <Box display="flex" justifyContent="center" alignItems="center" py={4}>
           <CircularProgress />

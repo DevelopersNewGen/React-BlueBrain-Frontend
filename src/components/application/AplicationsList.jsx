@@ -112,12 +112,10 @@ const ApplicationsList = () => {
     setDescriptionDialog({ open: false, content: '', applicant: '' })
   }
 
-  // Función simplificada para aprobar/rechazar directamente
   const handleDirectAction = async (applicationId, action) => {
     console.log(`Direct action: ${action} for application:`, applicationId)
     console.log('Full application object:', applications.find(app => (app.aid || app._id) === applicationId))
     
-    // Verificar que tenemos un ID válido
     if (!applicationId) {
       console.error('No application ID provided')
       setSnackbar({
@@ -157,13 +155,6 @@ const ApplicationsList = () => {
 
   const handleCloseSnackbar = () => {
     setSnackbar({ ...snackbar, open: false })
-  }
-
-  // Debug: Verificar estructura de datos
-  console.log('Applications data:', applications)
-  if (applications.length > 0) {
-    console.log('First application structure:', applications[0])
-    console.log('Application keys:', Object.keys(applications[0]))
   }
 
   if (loading) {
@@ -385,7 +376,6 @@ const ApplicationsList = () => {
         </Table>
       </TableContainer>
 
-      {/* Dialog para ver descripción completa */}
       <Dialog
         open={descriptionDialog.open}
         onClose={handleCloseDescription}
@@ -407,7 +397,6 @@ const ApplicationsList = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Snackbar para notificaciones */}
       <Snackbar
         open={snackbar.open}
         autoHideDuration={6000}

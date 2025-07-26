@@ -58,7 +58,6 @@ const ApplicationRequest = ({ open, onClose, subject }) => {
     }
   }
 
-  // Simplificar handleChange
   const handleChange = (e) => {
     const { name, value } = e.target
     
@@ -67,7 +66,6 @@ const ApplicationRequest = ({ open, onClose, subject }) => {
       [name]: value
     }))
     
-    // Clear error when user starts typing
     if (formErrors[name]) {
       setFormErrors(prev => ({
         ...prev,

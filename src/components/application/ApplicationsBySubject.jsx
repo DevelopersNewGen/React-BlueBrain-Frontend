@@ -42,47 +42,25 @@ const ApplicationsBySubject = () => {
   const [selectedSubject, setSelectedSubject] = useState(null)
   const [loadingSubjects, setLoadingSubjects] = useState(false)
 
-  // Cargar materias al montar el componente
   useEffect(() => {
     const loadSubjects = async () => {
       setLoadingSubjects(true)
       try {
         const response = await getAllSubjects()
-        
-        // Manejar todas las posibles estructuras de respuesta
         let subjectsData = []
         
-        if (response) {
-          // Caso 1: response.subjects
-          if (response.subjects && Array.isArray(response.subjects)) {
-            subjectsData = response.subjects
-          }
-          // Caso 2: response.data.subjects
-          else if (response.data && response.data.subjects && Array.isArray(response.data.subjects)) {
-            subjectsData = response.data.subjects
-          }
-          // Caso 3: response.data directo (si subjects está en data)
-          else if (response.data && Array.isArray(response.data)) {
-            subjectsData = response.data
-          }
-          // Caso 4: response es directamente un array
-          else if (Array.isArray(response)) {
-            subjectsData = response
-          }
-          // Caso 5: response.success con otra estructura
-          else if (response.success && response.data) {
-            if (Array.isArray(response.data)) {
-              subjectsData = response.data
-            } else if (response.data.subjects) {
-              subjectsData = response.data.subjects
-            }
-          }
+        if (response?.subjects) {
+          subjectsData = response.subjects
+        } else if (response?.data?.subjects) {
+          subjectsData = response.data.subjects
+        } else if (Array.isArray(response?.data)) {
+          subjectsData = response.data
+        } else if (Array.isArray(response)) {
+          subjectsData = response
         }
         
         setSubjects(subjectsData || [])
-        
       } catch (err) {
-        console.error('Error loading subjects:', err)
         setSubjects([])
       } finally {
         setLoadingSubjects(false)
@@ -97,9 +75,7 @@ const ApplicationsBySubject = () => {
     clearError()
     
     if (subject) {
-      // Usar el ID correcto dependiendo de la estructura
       const subjectId = subject._id || subject.sid || subject.id
-      
       if (subjectId) {
         fetchApplicationsBySubject(subjectId)
       }
@@ -157,7 +133,6 @@ const ApplicationsBySubject = () => {
         Aplicaciones por Materia
       </Typography>
 
-      {/* Selector de materia */}
       <Paper sx={{ p: 2, mb: 3 }}>
         <Autocomplete
           options={subjects}
@@ -202,7 +177,6 @@ const ApplicationsBySubject = () => {
         />
       </Paper>
 
-      {/* Resultados */}
       {loading && (
         <Box display="flex" justifyContent="center" alignItems="center" py={4}>
           <CircularProgress />
