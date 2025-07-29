@@ -6,18 +6,61 @@ import UsersList from "./components/user/UsersList";
 import ReportsPage from "./pages/reports/ReportsPage";
 import SubjectPage from "./pages/subject/SubjectPage";
 import ApplicationsPage from "./pages/application/ApplicationsPage";
+import ProtectedRoute from "./shared/components/ProtectedRoute";
 
 
 const routes = [
   { path: "/login", element: <LoginPage /> },
   { path: "/auth/callback", element: <AuthCallback /> },
   { path: "/auth/error", element: <AuthError /> },
-  { path: "/usuarios", element: <UsersList /> },
-  { path: "/reportes", element: <ReportsPage /> },
-  { path: "/", element: <DashboardPage /> },
-  { path: "*", element: <DashboardPage /> },
-  { path: "/subjects", element: <SubjectPage /> },
-  { path: "/applications", element: <ApplicationsPage /> },
+  { 
+    path: "/usuarios", 
+    element: (
+      <ProtectedRoute>
+        <UsersList />
+      </ProtectedRoute>
+    ) 
+  },
+  { 
+    path: "/reportes", 
+    element: (
+      <ProtectedRoute>
+        <ReportsPage />
+      </ProtectedRoute>
+    ) 
+  },
+  { 
+    path: "/", 
+    element: (
+      <ProtectedRoute>
+        <DashboardPage />
+      </ProtectedRoute>
+    ) 
+  },
+  { 
+    path: "*", 
+    element: (
+      <ProtectedRoute>
+        <DashboardPage />
+      </ProtectedRoute>
+    ) 
+  },
+  { 
+    path: "/subjects", 
+    element: (
+      <ProtectedRoute>
+        <SubjectPage />
+      </ProtectedRoute>
+    ) 
+  },
+  { 
+    path: "/applications", 
+    element: (
+      <ProtectedRoute>
+        <ApplicationsPage />
+      </ProtectedRoute>
+    ) 
+  },
 ];
 
 

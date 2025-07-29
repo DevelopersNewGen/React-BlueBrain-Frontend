@@ -19,8 +19,6 @@ export const DashboardPage = () => {
   const handleProfile = () => { setProfileOpen(true); handleMenuClose(); };
   const handleProfileClose = () => setProfileOpen(false);
 
-  // ...existing code...
-
   if (!isAuthenticated) {
     return (
       <Container maxWidth="sm">

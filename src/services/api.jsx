@@ -105,24 +105,40 @@ export const getSubjectById = async (sid) => {
     }
 };
 
-export const createSubject = async (formData) => {
+export const createSubject = async (subjectData) => {
     try {
-        const response = await apiClient.post('/subjects/create', formData, {
+        console.log('Creating subject with data:', subjectData)
+        
+        const response = await apiClient.post('/subjects/create', subjectData, {
             headers: {
-                'Content-Type': 'multipart/form-data'
+                'Content-Type': 'application/json'
             }
         });
+        
+        console.log('Create subject response:', response)
         return response.data;
     } catch (e) {
+        console.error('Error creating subject:', e)
         return { error: true, e };
     }
 };
 
 export const updateSubject = async (sid, subjectData) => {
     try {
-        const response = await apiClient.put(`/subjects/update/${sid}`, subjectData);
+        console.log('Sending PUT request to:', `/subjects/update/${sid}`)
+        console.log('With data:', subjectData)
+        
+        const response = await apiClient.put(`/subjects/update/${sid}`, subjectData, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        console.log('Backend response:', response)
         return response.data;
     } catch (e) {
+        console.error('Error in updateSubject:', e)
+        console.error('Error response:', e.response?.data)
         return { error: true, e };
     }
 };
