@@ -13,12 +13,13 @@ const menuOptionsByRole = {
     { name: 'Aplicaciones', route: '/applications' },
     { name: 'Reportes', route: '/reportes' },
     { name: 'Material' },
+    { name: 'Tutorial', route: '/tutorial' },
   ],
   STUDENT_ROLE: [
     { name: 'Material' },
     { name: 'Mi perfil' },
     { name: 'Materias', route: '/subjects' },
-    { name: 'Tutorial' }
+    { name: 'Tutorial', route: '/tutorial' },
   ],
   TEACHER_ROLE: [
     { name: 'Material' },
@@ -28,13 +29,14 @@ const menuOptionsByRole = {
     { name: 'Mis Materias', route: '/subjectsUser' },
     { name: 'Aplicaciones', route: '/applications' },
     { name: 'Reportes', route: '/reportes' },
-    { name: 'Solicitudes' }
+    { name: 'Solicitudes' },
+    { name: 'Tutorial', route: '/tutorial' },
   ],
   TUTOR_ROLE: [
     { name: 'Material' },
     { name: 'Mi perfil' },
     { name: 'Materias', route: '/subjects' },
-    { name: 'Tutoreados' },
+    { name: 'Tutorial', route: '/tutorial' },
     { name: 'Solicitudes' }
   ]
 };

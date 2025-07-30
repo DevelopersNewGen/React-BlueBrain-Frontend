@@ -6,6 +6,7 @@ import UsersList from "./components/user/UsersList";
 import ReportsPage from "./pages/reports/ReportsPage";
 import SubjectPage from "./pages/subject/SubjectPage";
 import ApplicationsPage from "./pages/application/ApplicationsPage";
+import { TutorialPage } from "./pages/tutorial/TutorialPage";
 import ProtectedRoute from "./shared/components/ProtectedRoute";
 
 
@@ -58,6 +59,14 @@ const routes = [
     element: (
       <ProtectedRoute>
         <ApplicationsPage />
+      </ProtectedRoute>
+    ) 
+  },
+  { 
+    path: "/tutorial", 
+    element: (
+      <ProtectedRoute>
+        <TutorialPage />
       </ProtectedRoute>
     ) 
   },

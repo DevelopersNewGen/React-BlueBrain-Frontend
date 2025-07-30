@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const apiClient = axios.create({
     baseURL: `http://localhost:3000/BlueBrain/v1`,
-    timeout: 3000,
+    timeout: 15000, // Aumentado a 15 segundos para crear tutorías con Teams
     httpsAgent: false
 });
 
@@ -239,3 +239,102 @@ export const updateApplicationStatus = async (applicationId, status, responseMes
         };
     }
 };
+
+// tutorials
+
+export const getAllTutorials = async () => {
+    try {
+        const response = await apiClient.get('/tutorials');
+        return response.data;
+    } catch (e) {
+        return { error: true, e };
+    }
+};
+
+export const getTutorialsByHost = async (uid) => {
+    try {
+        const response = await apiClient.get(`/tutorials/host/${uid}`);
+        return response.data;
+    } catch (e) {
+        return { error: true, e };
+    }
+};
+
+export const getTutorialsBySubject = async (sid) => {
+    try {
+        const response = await apiClient.get(`/tutorials/subject/${sid}`);
+        return response.data;
+    } catch (e) {
+        return { error: true, e };
+    }
+};
+
+export const getTutorialById = async (tid) => {
+    try {
+        const response = await apiClient.get(`/tutorials/${tid}`);
+        return response.data;
+    } catch (e) {
+        return { error: true, e };
+    }
+};
+
+export const createTutorial = async (tutorialData) => {
+    try {
+        const createTutorialClient = axios.create({
+            baseURL: `http://localhost:3000/BlueBrain/v1`,
+            timeout: 30000, 
+            httpsAgent: false
+        });
+
+        createTutorialClient.interceptors.request.use(
+            (config) => {
+                const userDetails = localStorage.getItem("user");
+                if (userDetails) {
+                    try {
+                        const parsedUser = JSON.parse(userDetails);
+                        if (parsedUser?.token) {
+                            config.headers.Authorization = `Bearer ${parsedUser.token}`;
+                        }
+                    } catch (err) {
+                        console.warn("Error al leer el token:", err);
+                    }
+                }
+                return config;
+            },
+            (error) => Promise.reject(error)
+        );
+
+        const response = await createTutorialClient.post('/tutorials/create', tutorialData);
+        return response.data; 
+    } catch (e) {
+        return { error: true, e };
+    }
+};
+
+export const updateTutorial = async (tid, tutorialData) => {
+    try {
+        const response = await apiClient.put(`/tutorials/update/${tid}`, tutorialData);
+        return response.data;
+    } catch (e) {
+        return { error: true, e };
+    }
+};
+
+export const deleteTutorial = async (tid) => {
+    try {
+        const response = await apiClient.delete(`/tutorials/delete/${tid}`);
+        return response.data;
+    } catch (e) {
+        return { error: true, e };
+    }
+};
+
+export const requestTutorial = async (tid, requestData = {}) => {
+    try {
+        const response = await apiClient.post(`/tutorials/accept/${tid}`, requestData);
+        return response.data;
+    } catch (e) {
+        return { error: true, e };
+    }
+};
+
