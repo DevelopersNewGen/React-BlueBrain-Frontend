@@ -10,10 +10,9 @@ const menuOptionsByRole = {
   ADMIN_ROLE: [
     { name: 'Usuarios', route: '/usuarios' },
     { name: 'Materias', route: '/subjects' },
-    { name: 'Material', route: '/materials' }
+    { name: 'Material', route: '/materials' },
     { name: 'Aplicaciones', route: '/applications' },
     { name: 'Reportes', route: '/reportes' },
-    { name: 'Material' },
     { name: 'Tutorial', route: '/tutorial' },
   ],
   STUDENT_ROLE: [
@@ -90,7 +89,7 @@ const Navbar = ({ user: propUser, userWithRole: propUserWithRole, onLogout }) =>
                 <Button
                   key={option.name}
                   sx={{ my: 2, color: 'white', display: 'block', alignItems: 'center', mx: 1, textTransform: 'none' }}
-                  onClick={() => navigate(option.route)
+                  onClick={() => navigate(option.route)}
                 >
                   {option.name.toUpperCase()}
                 </Button>

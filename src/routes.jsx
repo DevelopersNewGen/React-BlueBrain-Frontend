@@ -17,7 +17,6 @@ const routes = [
   { path: "/auth/error", element: <AuthError /> },
 
 
-=======
   { 
     path: "/usuarios", 
     element: (
@@ -74,8 +73,22 @@ const routes = [
       </ProtectedRoute>
     ) 
   },
-  { path: "/subjects/:subjectId/users", element: <SubjectUserPage /> },
-  { path: "/materials", element: <MaterialPage /> },
+  { 
+    path: "/subjects/:subjectId/users", 
+    element: (
+      <ProtectedRoute>
+        <SubjectUserPage />
+      </ProtectedRoute>
+    )
+  },
+  { 
+    path: "/materials", 
+    element: (
+      <ProtectedRoute>
+        <MaterialPage />
+      </ProtectedRoute>
+    ) 
+  },
 ];
 
 export default routes;

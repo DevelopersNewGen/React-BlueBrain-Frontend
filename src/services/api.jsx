@@ -447,3 +447,49 @@ export const getMyPrivateTutorials = async () => {
         return { error: true, e };
     }
 };
+
+export const getSubjectUsers = async (subjectId) => {
+  try {
+    const response = await apiClient.get(`/subject/${subjectId}`)
+    return response.data
+  } catch (e) {
+    return { error: true, e }
+  }
+}
+
+
+export const getAllMaterials = async () => {
+    try {
+        const response = await apiClient.get('/materials');
+        return response.data;
+    } catch (e) {
+        return { error: true, e };
+    }
+};
+
+export const createMaterial = async (materialData) => {
+    try {
+        const response = await apiClient.post('/materials/create', materialData);
+        return response.data;
+    } catch (e) {
+        return { error: true, e };
+    }
+};
+
+export const updateMaterial = async (mid, materialData) => {
+    try {
+        const response = await apiClient.put(`/materials/update/${mid}`, materialData);
+        return response.data;
+    } catch (e) {
+        return { error: true, e };
+    }
+};
+
+export const deleteMaterial = async (mid) => {
+    try {
+        const response = await apiClient.delete(`/materials/delete/${mid}`);
+        return response.data;
+    } catch (e) {
+        return { error: true, e };
+    }
+};
