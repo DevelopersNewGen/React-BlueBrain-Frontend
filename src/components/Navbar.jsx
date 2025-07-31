@@ -10,23 +10,21 @@ const menuOptionsByRole = {
   ADMIN_ROLE: [
     { name: 'Usuarios', route: '/usuarios' },
     { name: 'Materias', route: '/subjects' },
+    { name: 'Material', route: '/materials' }
     { name: 'Aplicaciones', route: '/applications' },
     { name: 'Reportes', route: '/reportes' },
     { name: 'Material' },
     { name: 'Tutorial', route: '/tutorial' },
-
   ],
   STUDENT_ROLE: [
-    { name: 'Material' },
-    { name: 'Mi perfil' },
+    { name: 'Material', route: '/materials' },
     { name: 'Materias', route: '/subjects' },
     { name: 'Tutorial', route: '/tutorial' },
     { name: 'Reportes' },
     { name: 'Solicitudes' }
   ],
   TEACHER_ROLE: [
-    { name: 'Material' },
-    { name: 'Mi perfil' },
+    { name: 'Material', route: '/materials' },
     { name: 'Estudiantes' },
     { name: 'Materias', route: '/subjects' },
     { name: 'Mis Materias', route: '/subjectsUser' },
@@ -36,8 +34,7 @@ const menuOptionsByRole = {
     { name: 'Tutorial', route: '/tutorial' },
   ],
   TUTOR_ROLE: [
-    { name: 'Material' },
-    { name: 'Mi perfil' },
+    { name: 'Material', route: '/materials' },
     { name: 'Materias', route: '/subjects' },
     { name: 'Tutorial', route: '/tutorial' },
     { name: 'Solicitudes' }
@@ -57,7 +54,6 @@ const Navbar = ({ user: propUser, userWithRole: propUserWithRole, onLogout }) =>
   const handleMenuClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
-  
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
@@ -94,7 +90,7 @@ const Navbar = ({ user: propUser, userWithRole: propUserWithRole, onLogout }) =>
                 <Button
                   key={option.name}
                   sx={{ my: 2, color: 'white', display: 'block', alignItems: 'center', mx: 1, textTransform: 'none' }}
-                  onClick={() => navigate(option.route)}
+                  onClick={() => navigate(option.route)
                 >
                   {option.name.toUpperCase()}
                 </Button>

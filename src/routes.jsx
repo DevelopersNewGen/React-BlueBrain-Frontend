@@ -3,6 +3,8 @@ import AuthCallback from "./pages/auth/AuthCallback";
 import AuthError from "./pages/auth/AuthError";
 import LoginPage from "./pages/auth/LoginPage";
 import UsersList from "./components/user/UsersList";
+import SubjectUserPage from "./pages/subject/SubjectUserPage";
+import MaterialPage from "./pages/material/MaterialPage";
 import ReportsPage from "./pages/reports/ReportsPage";
 import SubjectPage from "./pages/subject/SubjectPage";
 import ApplicationsPage from "./pages/application/ApplicationsPage";
@@ -13,6 +15,9 @@ const routes = [
   { path: "/login", element: <LoginPage /> },
   { path: "/auth/callback", element: <AuthCallback /> },
   { path: "/auth/error", element: <AuthError /> },
+
+
+=======
   { 
     path: "/usuarios", 
     element: (
@@ -69,7 +74,8 @@ const routes = [
       </ProtectedRoute>
     ) 
   },
+  { path: "/subjects/:subjectId/users", element: <SubjectUserPage /> },
+  { path: "/materials", element: <MaterialPage /> },
 ];
-
 
 export default routes;
