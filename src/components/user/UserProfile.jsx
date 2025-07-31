@@ -1,4 +1,4 @@
-import React from 'react'; 
+import React, { useState, useEffect } from 'react'; 
 import { 
   Dialog, 
   DialogTitle, 
@@ -7,10 +7,12 @@ import {
   Button, 
   Typography, 
   Box, 
-  Divider 
+  Divider,
+  CircularProgress 
 } from '@mui/material';
 
 import useUserProfile from '../../shared/hooks/useUserProfile.jsx';
+import { getAllUsers } from '../../services/api.jsx';
 
 const UserProfile = ({ open, onClose, user, triggerRef }) => {
   const {
@@ -23,6 +25,48 @@ const UserProfile = ({ open, onClose, user, triggerRef }) => {
     handleUpload,
     handleClose,
   } = useUserProfile({ open, onClose, user, triggerRef });
+
+  const [userRole, setUserRole] = useState('');
+  const [roleLoading, setRoleLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      if (open && user?.email) {
+        setRoleLoading(true);
+        try {
+          const response = await getAllUsers();
+          
+          if (response && response.success && Array.isArray(response.data)) {
+            const foundUser = response.data.find(u => u.email === user.email);
+            
+            if (foundUser && foundUser.role) {
+              setUserRole(foundUser.role);
+            } else {
+              setUserRole('Usuario');
+            }
+          } else {
+            setUserRole('Usuario');
+          }
+        } catch (error) {
+          setUserRole('Usuario');
+        } finally {
+          setRoleLoading(false);
+        }
+      }
+    };
+
+    fetchUserRole();
+  }, [open, user?.email]);
+
+  const formatRole = (role) => {
+    const roleMap = {
+      'ADMIN_ROLE': 'Administrador',
+      'TEACHER_ROLE': 'Profesor',
+      'STUDENT_ROLE': 'Estudiante',
+      'TUTOR_ROLE': 'Tutor'
+    };
+    return roleMap[role] || role || 'Usuario';
+  };
 
   return (
     <Dialog 
@@ -96,7 +140,14 @@ const UserProfile = ({ open, onClose, user, triggerRef }) => {
                 Rol
               </Typography>
               <Typography variant="h6">
-                {user?.role || 'Usuario'}
+                {roleLoading ? (
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <CircularProgress size={16} />
+                    Cargando...
+                  </Box>
+                ) : (
+                  formatRole(userRole)
+                )}
               </Typography>
             </Box>
           </Box>

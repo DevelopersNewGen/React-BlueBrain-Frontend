@@ -10,13 +10,13 @@ const useUsers = () => {
     const fetchUsers = async () => {
       try {
         const response = await getAllUsers();
-        if (response?.data?.users) {
-          setUsers(response.data.users);
+        
+        if (response?.data && Array.isArray(response.data)) {
+          setUsers(response.data);
         } else {
           setError('No se encontraron usuarios');
         }
       } catch (e) {
-        console.log('Error al obtener usuarios:', e);
         setError('Error al obtener usuarios');
       } finally {
         setLoading(false);
