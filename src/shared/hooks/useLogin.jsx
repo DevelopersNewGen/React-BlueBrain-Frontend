@@ -21,9 +21,7 @@ const useLogin = () => {
                 getUserRoleByUid(payload.uid)
                     .then(response => {
                         const role = response?.data?.role;
-                        const fullUser = { ...user, role };
-                        setUserWithRole(fullUser);
-                        localStorage.setItem('user', JSON.stringify(fullUser));
+                        setUserWithRole({ ...user, role });
                     })
                     .catch(() => {
                         setUserWithRole(user);
@@ -46,7 +44,7 @@ const useLogin = () => {
                 }
             }
         } catch (err) {
-            setError('Error al verificar autenticación');
+            setError('Error al verificar autenticación' + err.message);
         } finally {
             setLoading(false);
         }
@@ -56,8 +54,7 @@ const useLogin = () => {
         try {
             window.location.href = authEndpoints.login;
         } catch (err) {
-            console.error('Error al iniciar sesión:', err);
-            setError('Error al iniciar sesión');
+            setError('Error al iniciar sesión' + err.message);
         }
     };
 
@@ -67,8 +64,7 @@ const useLogin = () => {
             setUser(null);
             navigate('/login');
         } catch (err) {
-            console.error('Error al cerrar sesión:', err);
-            setError('Error al cerrar sesión');
+            setError('Error al cerrar sesión' + err.message);
         }
     };
 
@@ -77,7 +73,8 @@ const useLogin = () => {
     };
 
     return {
-        user: userWithRole,
+        user,
+        userWithRole,
         loading,
         error,
         login,

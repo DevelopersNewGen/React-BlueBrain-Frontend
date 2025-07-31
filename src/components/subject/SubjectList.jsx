@@ -5,88 +5,67 @@ import { useSubjectPut } from '../../shared/hooks/useSubjectPut'
 import { useSubjectDelete } from '../../shared/hooks/useSubjectDelete'
 import { useSubjectAddTeacher } from '../../shared/hooks/useSubjectAddTeacher'
 import { useUserGets } from '../../shared/hooks/useUserGets'
-import DeleteIcon from '@mui/icons-material/Delete'
-import Navbar from '../Navbar'
-import { Box, Typography, Avatar, CircularProgress, Alert, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Checkbox, FormControlLabel, Snackbar, IconButton, Autocomplete, Menu, MenuItem, Card, CardHeader, CardContent, CardActions, Grid } from '@mui/material'
-import MoreVertIcon from '@mui/icons-material/MoreVert'
 import useSubjectRemoveTeacher from '../../shared/hooks/useSubjectRemoveTeacher'
 import useSubjectRemoveTutor from '../../shared/hooks/useSubjectRemoveTutor'
+import useLogin from '../../shared/hooks/useLogin'
+import ApplicationRequest from '../application/ApplicationRequest'
+import { Box, CircularProgress } from '@mui/material'
+import DeleteIcon from '@mui/icons-material/Delete'
+import Navbar from '../Navbar'
+import { Typography, Avatar, Alert, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Checkbox, FormControlLabel, Snackbar, IconButton, Autocomplete, Menu, MenuItem, Card, CardHeader, CardContent, CardActions, Grid } from '@mui/material'
+import MoreVertIcon from '@mui/icons-material/MoreVert'
 
 const SubjectList = () => {
-  const currentUser = JSON.parse(localStorage.getItem('user') || '{}')
-  const role = currentUser.role
-  const isAdminOrTeacher = ['ADMIN_ROLE', 'TEACHER_ROLE', 'ADMIN', 'TEACHER']
-    .includes((role || '').toUpperCase())
-
-  const { subjects, loading, error, refetch } = useSubjectGets()
+  const { userWithRole, loading: authLoading } = useLogin()
+  const { subjects, loading: subjectsLoading, error, refetch } = useSubjectGets()
   const { postSubject, loading: posting, error: postError, success: postSuccess } = useSubjectPost()
-  const { putSubject, loading: putting, error: putError, success: putSuccess } = useSubjectPut()
+  const { putSubject, loading: putting, error: putError, success: putSuccess, resetSuccess } = useSubjectPut()
   const { removeSubject, loading: deleting, error: deleteError, success: deleteSuccess } = useSubjectDelete()
   const { addTeacher, loading: addingTeacher, error: addTeacherError, success: addTeacherSuccess } = useSubjectAddTeacher()
   const { users, loading: usersLoading, error: usersError, refetch: refetchUsers } = useUserGets()
   const { removeTeacher, loading: removingTeacher, error: removeTeacherError, response: removeTeacherResponse } = useSubjectRemoveTeacher()
-  const { removeTutor, loading: removingTutorTutor, error: removeTutorError, response: removeTutorResponse } = useSubjectRemoveTutor()
-
-  const teachersList = Array.isArray(users)
-    ? users.filter(u => u.role === 'TEACHER_ROLE')
-    : []
+  const { removeTutor, loading: removingTutor, error: removeTutorError, response: removeTutorResponse } = useSubjectRemoveTutor()
 
   const [selectedTeacher, setSelectedTeacher] = useState(null)
   const [open, setOpen] = useState(false)
-  const [formValues, setFormValues] = useState({
-    name: '',
-    code: '',
-    grade: '',
-    img: '',
-    status: true,
-    description: ''
-  })
+  const [formValues, setFormValues] = useState({ name:'', code:'', grade:'', img:'', status:true, description:'' })
   const [editOpen, setEditOpen] = useState(false)
   const [editSid, setEditSid] = useState(null)
-  const [editFormValues, setEditFormValues] = useState({
-    name: '',
-    code: '',
-    grade: '',
-    img: '',
-    status: true,
-    description: ''
-  })
+  const [editFormValues, setEditFormValues] = useState({ name:'', code:'', grade:'', img:'', status:true, description:'' })
   const [viewOpen, setViewOpen] = useState(false)
   const [viewSubject, setViewSubject] = useState(null)
   const [addTeacherOpen, setAddTeacherOpen] = useState(false)
   const [addTeacherSid, setAddTeacherSid] = useState(null)
   const [menuAnchorEl, setMenuAnchorEl] = useState(null)
   const [menuSubject, setMenuSubject] = useState(null)
+  const [applicationOpen, setApplicationOpen] = useState(false)
+  const [applicationSubject, setApplicationSubject] = useState(null)
 
-  useEffect(() => {
-    if (postSuccess) {
-      setOpen(false)
+  useEffect(() => { if (postSuccess) { setOpen(false); refetch() } }, [postSuccess, refetch])
+  useEffect(() => { 
+    if (putSuccess) { 
+      console.log('Put success detected, closing modal and refetching...')
+      setEditOpen(false); 
       refetch()
-      setFormValues({ name: '', code: '', grade: '', img: '', status: true, description: '' })
-    }
-  }, [postSuccess, refetch])
-
-  useEffect(() => {
-    if (putSuccess) {
-      setEditOpen(false)
-      refetch()
-      setEditSid(null)
-    }
+    } 
   }, [putSuccess, refetch])
+  useEffect(() => { if (addTeacherSuccess) { setAddTeacherOpen(false); refetch() } }, [addTeacherSuccess, refetch])
+  useEffect(() => { if (deleteSuccess) refetch() }, [deleteSuccess, refetch])
+  useEffect(() => { if (removeTeacherResponse?.success) { refetch(); setViewOpen(false) } }, [removeTeacherResponse, refetch])
+  useEffect(() => { if (removeTutorResponse?.success) { refetch(); setViewOpen(false) } }, [removeTutorResponse, refetch])
 
-  useEffect(() => {
-    if (addTeacherSuccess) {
-      setAddTeacherOpen(false)
-      setSelectedTeacher(null)
-      refetch()
-    }
-  }, [addTeacherSuccess, refetch])
+  if (authLoading) {
+    return (
+      <Box display="flex" justifyContent="center" mt={4}>
+        <CircularProgress />
+      </Box>
+    )
+  }
 
-  useEffect(() => {
-    if (deleteSuccess) {
-      refetch()
-    }
-  }, [deleteSuccess, refetch])
+  const role = userWithRole?.role
+  const isAdminOrTeacher = ['ADMIN_ROLE','TEACHER_ROLE'].includes((role||'').toUpperCase())
+  const isStudent = (role||'').toUpperCase() === 'STUDENT_ROLE'
+  const teachersList = Array.isArray(users) ? users : []
 
   const handleRemoveTeacher = async (sid, teacherId) => {
     if (!window.confirm('¿Eliminar este profesor de la materia?')) return
@@ -98,20 +77,6 @@ const SubjectList = () => {
     await removeTutor(sid, tutorId)
   }
 
-  useEffect(() => {
-    if (removeTeacherResponse?.success) {
-      refetch()
-      setViewOpen(false)
-    }
-  }, [removeTeacherResponse, refetch])
-
-  useEffect(() => {
-    if (removeTutorResponse?.success) {
-      refetch()
-      setViewOpen(false)
-    }
-  }, [removeTutorResponse, refetch])
-
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
   const handleChange = e => {
@@ -119,12 +84,24 @@ const SubjectList = () => {
     setFormValues(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }))
   }
   const handleSubmit = async () => {
-    const formData = new FormData()
-    Object.entries(formValues).forEach(([key, val]) => formData.append(key, val))
-    await postSubject(formData)
+    console.log('Creating subject with values:', formValues)
+    
+    // Enviamos como objeto JSON también para consistencia
+    const subjectData = {
+      name: formValues.name,
+      code: formValues.code,
+      grade: formValues.grade,
+      img: formValues.img,
+      status: formValues.status,
+      description: formValues.description
+    }
+    
+    console.log('Subject data to create:', subjectData)
+    await postSubject(subjectData)
   }
 
   const handleEditOpen = subj => {
+    resetSuccess() // Resetear el estado de success
     setEditSid(subj.sid)
     setEditFormValues({
       name: subj.name || '',
@@ -142,9 +119,31 @@ const SubjectList = () => {
     setEditFormValues(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }))
   }
   const handleEditSubmit = async () => {
-    const formData = new FormData()
-    Object.entries(editFormValues).forEach(([key, val]) => formData.append(key, val))
-    await putSubject(editSid, formData)
+    console.log('Submitting edit form with values:', editFormValues)
+    
+    // En lugar de FormData, enviamos un objeto JSON
+    const subjectData = {
+      name: editFormValues.name,
+      code: editFormValues.code,
+      grade: editFormValues.grade,
+      img: editFormValues.img,
+      status: editFormValues.status,
+      description: editFormValues.description
+    }
+    
+    console.log('Subject data to send:', subjectData)
+    
+    const result = await putSubject(editSid, subjectData)
+    console.log('Put result:', result)
+    
+    // Si la actualización es exitosa, forzar el refetch
+    if (result && !result.error) {
+      console.log('Update successful, closing modal and refetching')
+      setTimeout(() => {
+        refetch()
+        setEditOpen(false)
+      }, 100)
+    }
   }
 
   const handleViewOpen = subj => {
@@ -180,17 +179,28 @@ const SubjectList = () => {
     setMenuSubject(null)
   }
 
+  const handleSendApplication = async (subjectSid) => {
+    const subject = subjects.find(s => s.sid === subjectSid)
+    setApplicationSubject(subject)
+    setApplicationOpen(true)
+  }
+
+  const handleApplicationClose = () => {
+    setApplicationOpen(false)
+    setApplicationSubject(null)
+  }
+
   return (
     <>
       <Navbar />
       <Box p={4}>
-        { isAdminOrTeacher &&
+        {isAdminOrTeacher && (
           <Button variant="contained" onClick={handleOpen}>
             Agregar Materia
           </Button>
-        }
+        )}
       </Box>
-      {loading ? (
+      {subjectsLoading ? (
         <Box display="flex" justifyContent="center" mt={4}>
           <CircularProgress />
         </Box>
@@ -391,11 +401,11 @@ const SubjectList = () => {
                     <CardHeader title={`Docentes Asignados (${viewSubject?.teachers?.length || 0})`} />
                     <CardContent>
                       {viewSubject?.teachers?.length > 0
-                        ? viewSubject.teachers.map(t => (
-                            <Box key={t._id} display="flex" justifyContent="space-between" mb={1}>
+                        ? viewSubject.teachers.map((t, index) => (
+                            <Box key={t._id || t.uid || `teacher-${index}`} display="flex" justifyContent="space-between" mb={1}>
                               <Typography>{t.name}</Typography>
                               {isAdminOrTeacher && (
-                                <IconButton size="small" onClick={() => handleRemoveTeacher(viewSubject.sid, t._id)} disabled={removingTeacher}>
+                                <IconButton size="small" onClick={() => handleRemoveTeacher(viewSubject.sid, t._id || t.uid)} disabled={removingTeacher}>
                                   <DeleteIcon fontSize="small" />
                                 </IconButton>
                               )}
@@ -411,11 +421,11 @@ const SubjectList = () => {
                     <CardHeader title={`Tutores Asignados (${viewSubject?.tutors?.length || 0})`} />
                     <CardContent>
                       {viewSubject?.tutors?.length > 0
-                        ? viewSubject.tutors.map(t => (
-                            <Box key={t._id} display="flex" justifyContent="space-between" mb={1}>
+                        ? viewSubject.tutors.map((t, index) => (
+                            <Box key={t.tid || t.uid || `tutor-${index}`} display="flex" justifyContent="space-between" mb={1}>
                               <Typography>{t.name}</Typography>
                               {isAdminOrTeacher && (
-                                <IconButton size="small" onClick={() => handleRemoveTutor(viewSubject.sid, t._id)} disabled={removingTutorTutor}>
+                                <IconButton size="small" onClick={() => handleRemoveTutor(viewSubject.sid, t._id || t.uid)} disabled={removingTutor}>
                                   <DeleteIcon fontSize="small" />
                                 </IconButton>
                               )}
@@ -447,23 +457,23 @@ const SubjectList = () => {
         </DialogActions>
       </Dialog>
       <Dialog open={addTeacherOpen} onClose={!addingTeacher ? handleAddTeacherClose : null}>
-        <DialogTitle>Agregar Profesor a Materia</DialogTitle>
+        <DialogTitle>Agregar Usuario a Materia</DialogTitle>
         <DialogContent>
           {usersError && <Alert severity="error">{usersError}</Alert>}
           <Autocomplete
             options={teachersList}
-            getOptionLabel={opt => opt.name}
+            getOptionLabel={opt => `${opt.name} (${opt.role || 'Sin rol'})`}
             loading={usersLoading}
-            noOptionsText={usersLoading ? 'Cargando...' : 'No hay profesores'}
+            noOptionsText={usersLoading ? 'Cargando...' : 'No hay usuarios'}
             value={selectedTeacher}
             onOpen={() => refetchUsers()}
             onChange={(_, v) => setSelectedTeacher(v)}
-            renderInput={params => <TextField {...params} label="Selecciona Profesor" margin="dense" fullWidth />}
+            renderInput={params => <TextField {...params} label="Selecciona Usuario" margin="dense" fullWidth />}
             disabled={addingTeacher}
           />
           {!usersLoading && teachersList.length === 0 && (
             <Box mt={2}>
-              <Alert severity="info">No se encontraron profesores para asignar.</Alert>
+              <Alert severity="info">No se encontraron usuarios para asignar.</Alert>
             </Box>
           )}
           {addTeacherError && <Alert severity="error">{addTeacherError}</Alert>}
@@ -485,6 +495,11 @@ const SubjectList = () => {
         <MenuItem onClick={() => { handleViewOpen(menuSubject); handleMenuClose() }}>
           Ver detalles
         </MenuItem>
+        {isStudent && (
+          <MenuItem onClick={() => { handleSendApplication(menuSubject.sid); handleMenuClose() }}>
+            Enviar Aplicación
+          </MenuItem>
+        )}
         {isAdminOrTeacher && (
           <MenuItem onClick={() => { handleEditOpen(menuSubject); handleMenuClose() }}>
             Editar
@@ -492,7 +507,7 @@ const SubjectList = () => {
         )}
         {isAdminOrTeacher && (
           <MenuItem onClick={() => { handleAddTeacherOpen(menuSubject.sid); handleMenuClose() }}>
-            Agregar profesor
+            Agregar usuario
           </MenuItem>
         )}
         {isAdminOrTeacher && (
@@ -520,8 +535,15 @@ const SubjectList = () => {
             : 'Materia eliminada exitosamente'}
         </Alert>
       </Snackbar>
+      
+      {/* Application Request Dialog */}
+      <ApplicationRequest
+        open={applicationOpen}
+        onClose={handleApplicationClose}
+        subject={applicationSubject}
+      />
     </>
   )
 }
 
-export default SubjectList
+export default SubjectList
