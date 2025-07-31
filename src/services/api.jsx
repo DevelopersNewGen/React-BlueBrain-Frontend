@@ -1,13 +1,14 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-    baseURL: `https://nodejsbluebrainbackend.vercel.app/BlueBrain/v1`,
+    baseURL: `http://localhost:3000/BlueBrain/v1`,
+    //baseURL: `https://nodejsbluebrainbackend.vercel.app/BlueBrain/v1`,
     timeout: 15000, 
     httpsAgent: false
 });
 
 export const authEndpoints = {
-    login: `https://nodejsbluebrainbackend.vercel.app/BlueBrain/v1/auth/login`
+    login: `http://localhost:3000/BlueBrain/v1/auth/login`
 };
 
 apiClient.interceptors.request.use(
@@ -79,7 +80,6 @@ export const getAllSubjects = async () => {
 export const getAllReports = async () => {
     try {
         const response = await apiClient.get('/reports');
-        console.log('getAllReports response:', response);
         return response;
     } catch (e) {
         console.error('getAllReports error:', e);
@@ -96,6 +96,16 @@ export const updateReportStatus = async (reportId, status) => {
         return { error: true, e };
     }
 };
+
+export const reportUser = async (reportData) => {
+    try {
+        const response = await apiClient.post('users/report', reportData);
+        return response.data;
+    } catch (e) {
+        console.error('reportUSer error:', e);
+        return { error: true, e };
+    }
+}
 
 export const getSubjectById = async (sid) => {
     try {

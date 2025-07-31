@@ -84,6 +84,15 @@ const TutorialsList = () => {
   const [createModalOpen, setCreateModalOpen] = useState(false);
 
   const canCreateTutorials = userWithRole?.role === 'TUTOR_ROLE' || userWithRole?.role === 'TEACHER_ROLE';
+  const isAdmin = userWithRole?.role === 'ADMIN_ROLE';
+  const canSeeMisTutorias = !isAdmin; 
+
+  const getIsRequestsTab = () => {
+    let requestsIndex = 3;
+    if (canSeeMisTutorias) requestsIndex += 2; 
+    if (canCreateTutorials) requestsIndex += 1;
+    return currentTab === requestsIndex;
+  };
 
   const refetchMyPublic = useCallback(async () => {
     if (myPublicLoading) return; 
@@ -152,17 +161,36 @@ const TutorialsList = () => {
       refetchPublic();
     } else if (currentTab === 2) {
       refetchPrivate();
-    } else if (currentTab === 3) {
-      setMyPublicLoaded(false); 
-      refetchMyPublic();
-    } else if (currentTab === 4) {
-      setMyPrivateLoaded(false); 
-      refetchMyPrivate();
-    } else if (currentTab === 5) {
-      setMyTutorLoaded(false); 
-      refetchMyTutorTutorials();
-    } else if (currentTab === 6) {
-      refetchPrivate();
+    } else {
+      let nextIndex = 3;
+      
+      if (canSeeMisTutorias) {
+        if (currentTab === nextIndex) {
+          setMyPublicLoaded(false);
+          refetchMyPublic();
+          return;
+        }
+        nextIndex++;
+        if (currentTab === nextIndex) {
+          setMyPrivateLoaded(false);
+          refetchMyPrivate();
+          return;
+        }
+        nextIndex++;
+      }
+      
+      if (canCreateTutorials) {
+        if (currentTab === nextIndex) {
+          setMyTutorLoaded(false);
+          refetchMyTutorTutorials();
+          return;
+        }
+        nextIndex++;
+        if (currentTab === nextIndex) {
+          refetchPrivate();
+          return;
+        }
+      }
     }
   };
 
@@ -177,76 +205,98 @@ const TutorialsList = () => {
       refetchPublic();
     } else if (currentTab === 2 && (!privateTutorials || privateTutorials.length === 0) && !privateLoading && !privateError) {
       refetchPrivate();
-    } else if (currentTab === 3 && !myPublicLoaded && !myPublicLoading && !myPublicError) {
-      refetchMyPublic();
-    } else if (currentTab === 4 && !myPrivateLoaded && !myPrivateLoading && !myPrivateError) {
-      refetchMyPrivate();
-    } else if (currentTab === 5 && !myTutorLoaded && !myTutorLoading && !myTutorError) {
-      refetchMyTutorTutorials();
+    } else {
+      let nextIndex = 3;
+      
+      if (canSeeMisTutorias) {
+        if (currentTab === nextIndex && !myPublicLoaded && !myPublicLoading && !myPublicError) {
+          refetchMyPublic();
+          return;
+        }
+        nextIndex++;
+        if (currentTab === nextIndex && !myPrivateLoaded && !myPrivateLoading && !myPrivateError) {
+          refetchMyPrivate();
+          return;
+        }
+        nextIndex++;
+      }
+      
+      if (canCreateTutorials) {
+        if (currentTab === nextIndex && !myTutorLoaded && !myTutorLoading && !myTutorError) {
+          refetchMyTutorTutorials();
+          return;
+        }
+      }
     }
-  }, [currentTab, myPublicLoaded, myPrivateLoaded, myTutorLoaded, publicLoading, privateLoading, myPublicLoading, myPrivateLoading, myTutorLoading, publicError, privateError, myPublicError, myPrivateError, myTutorError]);
+  }, [currentTab, canSeeMisTutorias, canCreateTutorials, myPublicLoaded, myPrivateLoaded, myTutorLoaded, publicLoading, privateLoading, myPublicLoading, myPrivateLoading, myTutorLoading, publicError, privateError, myPublicError, myPrivateError, myTutorError, publicTutorials, privateTutorials, refetchPublic, refetchPrivate, refetchMyPublic, refetchMyPrivate, refetchMyTutorTutorials]);
 
   const getCurrentTutorials = () => {
-    switch (currentTab) {
-      case 0:
-        return tutorials || [];
-      case 1:
-        return publicTutorials || [];
-      case 2:
-        return privateTutorials || [];
-      case 3:
-        return myPublicTutorials || [];
-      case 4:
-        return myPrivateTutorials || [];
-      case 5:
-        return myTutorTutorials?.tutorials || [];
-      case 6:
-        return []; 
-      default:
-        return tutorials || [];
+    if (currentTab === 0) return tutorials || []; 
+    if (currentTab === 1) return publicTutorials || []; 
+    if (currentTab === 2) return privateTutorials || []; 
+    
+    let nextIndex = 3;
+    
+    if (canSeeMisTutorias) {
+      if (currentTab === nextIndex) return myPublicTutorials || []; 
+      nextIndex++;
+      if (currentTab === nextIndex) return myPrivateTutorials || []; 
+      nextIndex++;
     }
+    
+    if (canCreateTutorials) {
+      if (currentTab === nextIndex) return myTutorTutorials?.tutorials || []; 
+      nextIndex++;
+      if (currentTab === nextIndex) return []; 
+    }
+    
+    return tutorials || [];
   };
 
   const getCurrentLoading = () => {
-    switch (currentTab) {
-      case 0:
-        return loading;
-      case 1:
-        return publicLoading;
-      case 2:
-        return privateLoading;
-      case 3:
-        return myPublicLoading;
-      case 4:
-        return myPrivateLoading;
-      case 5:
-        return myTutorLoading;
-      case 6:
-        return false; 
-      default:
-        return loading;
+    if (currentTab === 0) return loading;
+    if (currentTab === 1) return publicLoading;
+    if (currentTab === 2) return privateLoading;
+    
+    let nextIndex = 3;
+    
+    if (canSeeMisTutorias) {
+      if (currentTab === nextIndex) return myPublicLoading;
+      nextIndex++;
+      if (currentTab === nextIndex) return myPrivateLoading;
+      nextIndex++;
     }
+    
+    if (canCreateTutorials) {
+      if (currentTab === nextIndex) return myTutorLoading;
+      nextIndex++;
+      if (currentTab === nextIndex) return false; 
+    }
+    
+    return loading;
   };
 
   const getCurrentError = () => {
-    switch (currentTab) {
-      case 0:
-        return error;
-      case 1:
-        return publicError;
-      case 2:
-        return privateError;
-      case 3:
-        return myPublicError;
-      case 4:
-        return myPrivateError;
-      case 5:
-        return myTutorError;
-      case 6:
-        return null; 
-      default:
-        return error;
+    if (currentTab === 0) return error;
+    if (currentTab === 1) return publicError;
+    if (currentTab === 2) return privateError;
+    
+    let nextIndex = 3;
+    
+    if (canSeeMisTutorias) {
+      if (currentTab === nextIndex) return myPublicError;
+      nextIndex++;
+      if (currentTab === nextIndex) return myPrivateError;
+      nextIndex++;
     }
+    
+    if (canCreateTutorials) {
+      if (currentTab === nextIndex) return myTutorError;
+      nextIndex++;
+      if (currentTab === nextIndex) return null; 
+    }
+    
+    return error;
   };
 
   const currentTutorials = getCurrentTutorials();
@@ -345,11 +395,26 @@ const TutorialsList = () => {
             {currentTab === 0 && "Explora y únete a las tutorías disponibles"}
             {currentTab === 1 && "Tutorías públicas disponibles"}
             {currentTab === 2 && "Tutorías privadas disponibles"}
-            {currentTab === 3 && "Tutorías públicas a las que estás inscrito"}
-            {currentTab === 4 && "Tutorías privadas a las que estás inscrito"}
-            {currentTab === 5 && "Tutorías que has creado como tutor"}
-            {currentTab === 6 && "Gestiona las solicitudes de tutorías privadas"}
-            {canCreateTutorials && currentTab !== 6 && (
+            {(() => {
+              let nextIndex = 3;
+              let description = "";
+              
+              if (canSeeMisTutorias) {
+                if (currentTab === nextIndex) description = "Tutorías públicas a las que estás inscrito";
+                nextIndex++;
+                if (currentTab === nextIndex) description = "Tutorías privadas a las que estás inscrito";
+                nextIndex++;
+              }
+              
+              if (canCreateTutorials) {
+                if (currentTab === nextIndex) description = "Tutorías que has creado como tutor";
+                nextIndex++;
+                if (currentTab === nextIndex) description = "Gestiona las solicitudes de tutorías privadas";
+              }
+              
+              return description;
+            })()}
+            {canCreateTutorials && !getIsRequestsTab() && (
               <Typography component="span" variant="body2" color="primary.main" sx={{ ml: 1 }}>
                 • Puedes crear nuevas tutorías
               </Typography>
@@ -357,7 +422,7 @@ const TutorialsList = () => {
           </Typography>
         </Box>
         <Box display="flex" gap={2}>
-          {canCreateTutorials && currentTab !== 6 && (
+          {canCreateTutorials && !getIsRequestsTab() && (
             <Button 
               variant="contained" 
               onClick={handleCreateTutorial}
@@ -401,16 +466,20 @@ const TutorialsList = () => {
             label="Tutorías Privadas" 
             iconPosition="start" 
           />
-          <Tab 
-            icon={<Person />} 
-            label="Mis Tutorías Públicas" 
-            iconPosition="start" 
-          />
-          <Tab 
-            icon={<PersonalVideo />} 
-            label="Mis Tutorías Privadas" 
-            iconPosition="start" 
-          />
+          {canSeeMisTutorias && (
+            <Tab 
+              icon={<Person />} 
+              label="Mis Tutorías Públicas" 
+              iconPosition="start" 
+            />
+          )}
+          {canSeeMisTutorias && (
+            <Tab 
+              icon={<PersonalVideo />} 
+              label="Mis Tutorías Privadas" 
+              iconPosition="start" 
+            />
+          )}
           {canCreateTutorials && (
             <Tab 
               icon={<Psychology />} 
@@ -429,7 +498,7 @@ const TutorialsList = () => {
       </Box>
 
       <Box sx={{ mb: 3 }}>
-        {currentTab === 6 ? (
+        {getIsRequestsTab() ? (
           <Typography variant="body2" color="text.secondary">
             Panel de gestión de solicitudes de tutorías privadas
           </Typography>
@@ -478,7 +547,7 @@ const TutorialsList = () => {
         )}
       </Box>
 
-      {currentTab === 6 ? (
+      {getIsRequestsTab() ? (
         <TutorialRequest />
       ) : filteredTutorials.length === 0 ? (
         <Box textAlign="center" py={4}>
@@ -504,6 +573,7 @@ const TutorialsList = () => {
                 key={tutorial._id} 
                 tutorial={tutorial} 
                 tutorialType={tutorialType}
+                user={userWithRole}
               />
             );
           })}

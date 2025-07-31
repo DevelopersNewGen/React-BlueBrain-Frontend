@@ -28,13 +28,16 @@ import {
   Group,
   Share,
   PlayArrow,
-  VideoCall
+  VideoCall,
+  Report
 } from '@mui/icons-material';
 import { RequestTutorial } from './RequestTutorial';
+import { ReportUser } from './ReportUser';
 
-const TutorialCard = ({ tutorial, tutorialType }) => {
+const TutorialCard = ({ tutorial, tutorialType, user }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [requestModalOpen, setRequestModalOpen] = useState(false);
+  const [reportModalOpen, setReportModalOpen] = useState(false);
 
   if (!tutorial) {
     return (
@@ -134,6 +137,11 @@ const TutorialCard = ({ tutorial, tutorialType }) => {
 
   const tutorialAccess = getTutorialAccess();
   const isMyTutorial = tutorialType === 'my-public' || tutorialType === 'my-private';
+  const isMyCreatedTutorial = tutorialType === 'my-created';
+  const canReportUsers = isMyCreatedTutorial && tutorial.status === 'COMPLETED';
+  
+  const studentToReport = tutorial.student || tutorial.studentId;
+
 
   return (
     <Card 
@@ -253,7 +261,7 @@ const TutorialCard = ({ tutorial, tutorialType }) => {
                     <strong>Estudiante:</strong>
                   </Typography>
                   <Typography variant="body2" sx={{ wordBreak: 'break-all', fontSize: '0.8rem' }}>
-                    {tutorial.student.name}
+                    {tutorial.student.name || user.name}
                   </Typography>
                 </Grid>
               )}
@@ -341,6 +349,20 @@ const TutorialCard = ({ tutorial, tutorialType }) => {
                 Teams
               </Button>
             )}
+            
+            {canReportUsers && studentToReport && (
+              <Button 
+                variant="outlined" 
+                color="error" 
+                startIcon={<Report />}
+                size="small"
+                onClick={() => setReportModalOpen(true)}
+                sx={{ textTransform: 'none' }}
+              >
+                Reportar Estudiante
+              </Button>
+            )}
+            
             <Button 
               variant="contained" 
               color="success" 
@@ -359,6 +381,14 @@ const TutorialCard = ({ tutorial, tutorialType }) => {
         open={requestModalOpen}
         onClose={() => setRequestModalOpen(false)}
         tutorial={tutorial}
+      />
+      
+      <ReportUser
+        open={reportModalOpen}
+        onClose={() => setReportModalOpen(false)}
+        userToReport={studentToReport}
+        tutorialId={tutorial._id || tutorial.tid}
+        subjectId={tutorial.subject?._id || tutorial.subject?.sid}
       />
     </Card>
   );
