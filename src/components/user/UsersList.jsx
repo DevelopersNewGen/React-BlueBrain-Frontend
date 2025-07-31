@@ -66,8 +66,8 @@ const UsersList = () => {
               borderRadius: 2,
               boxShadow: '0 4px 12px rgba(13, 71, 161, 0.15)',
               '& .MuiDataGrid-columnHeaders': {
-                backgroundColor: '#1976d2',
-                color: '#fff',
+                backgroundColor: '#e3f2fd',
+                color: '#0D47A1',
                 fontWeight: '600',
                 letterSpacing: 0.5
               },
@@ -91,14 +91,14 @@ const UsersList = () => {
                 fontSize: '0.9rem',
 
                 '& .MuiDataGrid-columnHeaders': {
-                  backgroundColor: '#0D47A1', 
-                  color: '#fff',
+                  backgroundColor: '#e3f2fd',  
+                  color: '#0D47A1',
                   fontWeight: '600',
                   letterSpacing: 0.5,
                 },
 
                 '& .MuiDataGrid-row': {
-                  backgroundColor: '#1976d2',
+                  backgroundColor: '#1976d2',  
                   color: '#fff',
                   transition: 'background-color 0.3s ease, color 0.3s ease, transform 0.2s ease',
                   cursor: 'pointer',

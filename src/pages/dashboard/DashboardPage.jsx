@@ -259,6 +259,7 @@ export const DashboardPage = () => {
 
             {userWithRole?.role === 'ADMIN_ROLE' && (
               <Grid container spacing={5} sx={{ mb: 2, justifyContent: 'center' }}>
+                {/* Botones de acceso rápido */}
                 <Grid item xs={12}>
                   <Box
                     sx={{
@@ -322,7 +323,7 @@ export const DashboardPage = () => {
                     <Paper
                       elevation={3}
                       sx={{
-                        p: 6,
+                        p: 6, 
                         borderRadius: 4,
                         textAlign: 'center',
                         bgcolor: '#fff',
@@ -333,13 +334,13 @@ export const DashboardPage = () => {
                           boxShadow: 6,
                         },
                         minWidth: { xs: '80%', sm: 'auto' }, 
-                        maxWidth: { xs: '300px', sm: '100%' }
+                        maxWidth: { xs: '300px', sm: '100%' } 
                       }}
                     >
                       <Box
                         sx={{
                           mx: 'auto',
-                          mb: 3, 
+                          mb: 3,
                           width: 80,
                           height: 80,
                           display: 'flex',
@@ -348,17 +349,17 @@ export const DashboardPage = () => {
                           borderRadius: '50%',
                           backgroundColor: item.bg,
                           color: item.color,
-                          '& .MuiSvgIcon-root': { 
-                            fontSize: '3rem',
+                          '& .MuiSvgIcon-root': {
+                            fontSize: '3rem', 
                           },
                         }}
                       >
                         {item.icon}
                       </Box>
-                      <Typography variant="h3" fontWeight="bold" color="text.primary">
+                      <Typography variant="h3" fontWeight="bold" color="text.primary"> 
                         {item.value}
                       </Typography>
-                      <Typography variant="h6" color="text.secondary">
+                      <Typography variant="h6" color="text.secondary"> 
                         {item.label}
                       </Typography>
                     </Paper>
