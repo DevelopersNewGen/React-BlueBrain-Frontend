@@ -14,12 +14,15 @@ const menuOptionsByRole = {
     { name: 'Reportes', route: '/reportes' },
     { name: 'Material' },
     { name: 'Tutorial', route: '/tutorial' },
+
   ],
   STUDENT_ROLE: [
     { name: 'Material' },
     { name: 'Mi perfil' },
     { name: 'Materias', route: '/subjects' },
     { name: 'Tutorial', route: '/tutorial' },
+    { name: 'Reportes' },
+    { name: 'Solicitudes' }
   ],
   TEACHER_ROLE: [
     { name: 'Material' },
@@ -43,6 +46,7 @@ const menuOptionsByRole = {
 
 const Navbar = ({ user: propUser, userWithRole: propUserWithRole, onLogout }) => {
   const navigate = useNavigate();
+
   const [anchorEl, setAnchorEl] = useState(null);
   const [profileOpen, setProfileOpen] = useState(false);
   const open = Boolean(anchorEl);

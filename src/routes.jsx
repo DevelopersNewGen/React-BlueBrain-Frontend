@@ -9,7 +9,6 @@ import ApplicationsPage from "./pages/application/ApplicationsPage";
 import { TutorialPage } from "./pages/tutorial/TutorialPage";
 import ProtectedRoute from "./shared/components/ProtectedRoute";
 
-
 const routes = [
   { path: "/login", element: <LoginPage /> },
   { path: "/auth/callback", element: <AuthCallback /> },
