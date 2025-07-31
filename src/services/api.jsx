@@ -1,13 +1,13 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-    baseURL: `http://localhost:3000/BlueBrain/v1`,
-    timeout: 15000, // Aumentado a 15 segundos para crear tutorías con Teams
+    baseURL: `https://nodejsbluebrainbackend.vercel.app/BlueBrain/v1`,
+    timeout: 15000, 
     httpsAgent: false
 });
 
 export const authEndpoints = {
-    login: `http://localhost:3000/BlueBrain/v1/auth/login`
+    login: `https://nodejsbluebrainbackend.vercel.app/BlueBrain/v1/auth/login`
 };
 
 apiClient.interceptors.request.use(
@@ -338,3 +338,112 @@ export const requestTutorial = async (tid, requestData = {}) => {
     }
 };
 
+export const getTutorialByTutor = async () => {
+    try {
+        const response = await apiClient.get(`/tutorials/myTutorials`);
+        return response.data;
+    } catch (e) {
+        return { error: true, e };
+    }
+};
+
+// public tutorials
+export const getAllPublicTutorials = async () => {
+    try {
+        const response = await apiClient.get('/publicTutorials');
+        return response.data;
+    } catch (e) {
+        return { error: true, e };
+    }
+};
+
+export const getPublicTutorialById = async (ptid) => {
+    try {
+        const response = await apiClient.get(`/publicTutorials/${ptid}`);
+        return response.data;
+    } catch (e) {
+        return { error: true, e };
+    }
+};
+
+export const getMyPublicTutorials = async () => {
+    try {
+        const response = await apiClient.get('/publicTutorials/myTutorials');
+        return response.data;
+    } catch (e) {
+        return { error: true, e };
+    }
+};
+
+export const getPublicTutorialsByStudent = async (studentId) => {
+    try {
+        const response = await apiClient.get(`/publicTutorials/student/${studentId}`);
+        return response.data;
+    } catch (e) {
+        return { error: true, e };
+    }
+};
+
+export const updatePublicTutorialStatus = async (ptid, statusData) => {
+    try {
+        const response = await apiClient.patch(`/publicTutorials/status/${ptid}`, statusData);
+        return response.data;
+    } catch (e) {
+        return { error: true, e };
+    }
+};
+
+// private tutorials
+export const getAllPrivateTutorials = async () => {
+    try {
+        const response = await apiClient.get('/privTutorials');
+        return response.data;
+    } catch (e) {
+        return { error: true, e };
+    }
+};
+
+export const getPrivateTutorialById = async (ptid) => {
+    try {
+        const response = await apiClient.get(`/privTutorials/get/${ptid}`);
+        return response.data;
+    } catch (e) {
+        return { error: true, e };
+    }
+};
+
+export const acceptPrivateTutorial = async (ptid, responseData = {}) => {
+    try {
+        const response = await apiClient.patch(`/privTutorials/accept/${ptid}`, responseData);
+        return response.data;
+    } catch (e) {
+        return { error: true, e };
+    }
+};
+
+export const rejectPrivateTutorial = async (ptid, responseData = {}) => {
+    try {
+        const response = await apiClient.patch(`/privTutorials/reject/${ptid}`, responseData);
+        return response.data;
+    } catch (e) {
+        return { error: true, e };
+    }
+};
+
+export const getPrivateTutorialsByStudent = async (studentId) => {
+    try {
+        const response = await apiClient.get(`/privTutorials/student/${studentId}`);
+        return response.data;
+    } catch (e) {
+        return { error: true, e };
+    }
+};
+
+export const getMyPrivateTutorials = async () => {
+    try {
+        const response = await apiClient.get('/privTutorials/myTutorials');
+        return response.data;
+    } catch (e) {
+        return { error: true, e };
+    }
+};

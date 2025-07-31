@@ -146,9 +146,6 @@ export const RequestTutorial = ({ open, onClose, tutorial }) => {
 
       if (result.success) {
         setSuccess(true);
-        if (result.hasTeamsLink && tutorial.access === 'PUBLIC') {
-          console.log('Enlace de Microsoft Teams creado exitosamente');
-        }
         setTimeout(() => {
           onClose();
         }, 2000);

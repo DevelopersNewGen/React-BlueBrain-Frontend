@@ -4,6 +4,7 @@ import {
     getTutorialsByHost,
     getTutorialsBySubject,
     getTutorialById,
+    getTutorialByTutor,
     createTutorial,
     updateTutorial,
     deleteTutorial,
@@ -100,6 +101,28 @@ export const useTutorials = () => {
             return {
                 success: false, 
                 data: null
+            };
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    const fetchTutorialsByTutor = useCallback(async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await getTutorialByTutor();
+            if (response.error) {
+                setError('Error al cargar las tutorías del tutor');
+                return { success: false, data: [] };
+            } else {
+                return { success: true, data: response.data || [] };
+            }
+        } catch (err) {
+            toast.error('Error de conexión al cargar las tutorías del tutor: ' + err.message);
+            return {
+                success: false, 
+                data: []
             };
         } finally {
             setLoading(false);
@@ -206,6 +229,7 @@ export const useTutorials = () => {
         fetchTutorialsByHost,
         fetchTutorialsBySubject,
         fetchTutorialById,
+        fetchTutorialsByTutor,
         createNewTutorial,
         updateExistingTutorial,
         deleteExistingTutorial,

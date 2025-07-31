@@ -27,26 +27,44 @@ import {
   Visibility,
   Group,
   Share,
-  PlayArrow
+  PlayArrow,
+  VideoCall
 } from '@mui/icons-material';
 import { RequestTutorial } from './RequestTutorial';
 
-const TutorialCard = ({ tutorial }) => {
+const TutorialCard = ({ tutorial, tutorialType }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [requestModalOpen, setRequestModalOpen] = useState(false);
+
+  if (!tutorial) {
+    return (
+      <Card elevation={2} sx={{ mb: 2 }}>
+        <CardContent>
+          <Typography variant="body2" color="text.secondary">
+            Error: Información de tutoría no disponible
+          </Typography>
+        </CardContent>
+      </Card>
+    );
+  }
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('es-ES', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    if (!dateString) return 'No disponible';
+    try {
+      return new Date(dateString).toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch {
+      return 'Fecha inválida';
+    }
   };
 
   const getStatusColor = (status) => {
@@ -102,6 +120,21 @@ const TutorialCard = ({ tutorial }) => {
     return access === 'PRIVATE' ? 'Privada' : 'Pública';
   };
 
+  const getTutorialAccess = () => {
+    if (tutorialType === 'public' || tutorialType === 'my-public') return 'PUBLIC';
+    if (tutorialType === 'private' || tutorialType === 'my-private') return 'PRIVATE';
+    
+    if (tutorial.access) return tutorial.access;
+    
+    if (tutorial.student) return 'PRIVATE'; 
+    if (tutorial.tutor && !tutorial.host) return 'PRIVATE';
+    
+    return 'PUBLIC';
+  };
+
+  const tutorialAccess = getTutorialAccess();
+  const isMyTutorial = tutorialType === 'my-public' || tutorialType === 'my-private';
+
   return (
     <Card 
       elevation={2} 
@@ -117,15 +150,26 @@ const TutorialCard = ({ tutorial }) => {
       <CardContent>
         <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
           <Typography variant="h6" component="h3" sx={{ fontWeight: 600, color: 'primary.main', flex: 1, mr: 2 }}>
-            {tutorial.topic}
+            {tutorial.topic || 'Sin título'}
           </Typography>
-          <Chip
-            icon={getStatusIcon(tutorial.status)}
-            label={getStatusText(tutorial.status)}
-            color={getStatusColor(tutorial.status)}
-            variant="outlined"
-            size="small"
-          />
+          <Box display="flex" gap={1} alignItems="center">
+            {isMyTutorial && (
+              <Chip
+                label="Mis Tutorías"
+                color="info"
+                variant="outlined"
+                size="small"
+                sx={{ fontSize: '0.7rem' }}
+              />
+            )}
+            <Chip
+              icon={getStatusIcon(tutorial.status)}
+              label={getStatusText(tutorial.status)}
+              color={getStatusColor(tutorial.status)}
+              variant="outlined"
+              size="small"
+            />
+          </Box>
         </Box>
 
         <Typography 
@@ -133,7 +177,7 @@ const TutorialCard = ({ tutorial }) => {
           color="text.secondary" 
           sx={{ mb: 2, lineHeight: 1.5 }}
         >
-          {tutorial.description}
+          {tutorial.description || 'Sin descripción disponible'}
         </Typography>
 
         <Grid container spacing={2} sx={{ mb: 2 }}>
@@ -141,7 +185,7 @@ const TutorialCard = ({ tutorial }) => {
             <Box display="flex" alignItems="center" gap={1}>
               <CalendarToday fontSize="small" color="action" />
               <Typography variant="body2" color="text.secondary">
-                <strong>Inicio:</strong> {formatDate(tutorial.startTime)}
+                <strong>Inicio:</strong> {formatDate(tutorial.startTime || tutorial.scheduledDate)}
               </Typography>
             </Box>
           </Grid>
@@ -151,8 +195,8 @@ const TutorialCard = ({ tutorial }) => {
                 <strong>Acceso:</strong>
               </Typography>
               <Chip
-                label={getAccessText(tutorial.access)}
-                color={getAccessColor(tutorial.access)}
+                label={getAccessText(tutorialAccess)}
+                color={getAccessColor(tutorialAccess)}
                 size="small"
                 variant="outlined"
               />
@@ -193,19 +237,33 @@ const TutorialCard = ({ tutorial }) => {
               
               <Grid item xs={12} sm={6}>
                 <Typography variant="body2" color="text.secondary">
-                  <strong>Host:</strong>
+                  <strong>{tutorialAccess === 'PRIVATE' ? 'Tutor:' : 'Host:'}</strong>
                 </Typography>
                 <Typography variant="body2" sx={{ wordBreak: 'break-all', fontSize: '0.8rem' }}>
-                  {tutorial.host.name}
+                  {tutorialAccess === 'PRIVATE' 
+                    ? (tutorial.tutor?.name || 'No disponible')
+                    : (tutorial.host?.name || 'No disponible')
+                  }
                 </Typography>
               </Grid>
+              
+              {tutorialAccess === 'PRIVATE' && tutorial.student && (
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="body2" color="text.secondary">
+                    <strong>Estudiante:</strong>
+                  </Typography>
+                  <Typography variant="body2" sx={{ wordBreak: 'break-all', fontSize: '0.8rem' }}>
+                    {tutorial.student.name}
+                  </Typography>
+                </Grid>
+              )}
               
               <Grid item xs={12} sm={6}>
                 <Typography variant="body2" color="text.secondary">
                   <strong>Materia:</strong>
                 </Typography>
                 <Typography variant="body2" sx={{ wordBreak: 'break-all', fontSize: '0.8rem' }}>
-                  {tutorial.subject.name}
+                  {tutorial.subject?.name || 'No disponible'}
                 </Typography>
               </Grid>
               
@@ -214,7 +272,7 @@ const TutorialCard = ({ tutorial }) => {
                   <strong>Fecha de Fin:</strong>
                 </Typography>
                 <Typography variant="body2">
-                  {formatDate(tutorial.endTime)}
+                  {formatDate(tutorial.endTime || tutorial.scheduledEndTime)}
                 </Typography>
               </Grid>
               
@@ -235,18 +293,54 @@ const TutorialCard = ({ tutorial }) => {
                   {formatDate(tutorial.updatedAt)}
                 </Typography>
               </Grid>
+              
+              {tutorialAccess === 'PRIVATE' && tutorial.modalidad && (
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="body2" color="text.secondary">
+                    <strong>Modalidad:</strong>
+                  </Typography>
+                  <Typography variant="body2">
+                    {tutorial.modalidad}
+                  </Typography>
+                </Grid>
+              )}
+              
+              {tutorial.level && (
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="body2" color="text.secondary">
+                    <strong>Nivel:</strong>
+                  </Typography>
+                  <Typography variant="body2">
+                    {tutorial.level}
+                  </Typography>
+                </Grid>
+              )}
+              
+              
             </Grid>
           </Paper>
 
           <CardActions sx={{ justifyContent: 'center', gap: 1, pt: 2 }}>
-            <Button 
-              variant="contained" 
-              color="primary" 
-              startIcon={<Visibility />}
-              size="small"
-            >
-              Ver Detalles
-            </Button>
+            {tutorial.meetingLink && (
+              <Button 
+                variant="contained" 
+                color="primary" 
+                startIcon={<VideoCall />}
+                size="small"
+                href={tutorial.meetingLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                sx={{ 
+                  textTransform: 'none',
+                  backgroundColor: '#6264A7', 
+                  '&:hover': {
+                    backgroundColor: '#5558a0'
+                  }
+                }}
+              >
+                Teams
+              </Button>
+            )}
             <Button 
               variant="contained" 
               color="success" 
@@ -257,19 +351,10 @@ const TutorialCard = ({ tutorial }) => {
             >
               Unirse
             </Button>
-            <Button 
-              variant="outlined" 
-              color="primary" 
-              startIcon={<Share />}
-              size="small"
-            >
-              Compartir
-            </Button>
           </CardActions>
         </CardContent>
       </Collapse>
       
-      {/* Modal para solicitar tutoría */}
       <RequestTutorial
         open={requestModalOpen}
         onClose={() => setRequestModalOpen(false)}

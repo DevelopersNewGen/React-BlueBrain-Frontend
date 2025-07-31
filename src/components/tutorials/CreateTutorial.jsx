@@ -156,8 +156,7 @@ export const CreateTutorial = ({ open, onClose }) => {
         }
       }
     } catch (error) {
-      console.error('Error en catch:', error);
-      setSubmitError('Error de conexión');
+      setSubmitError('Error de conexión' + error.message);
     }
   };
 
