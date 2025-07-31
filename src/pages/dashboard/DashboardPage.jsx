@@ -15,7 +15,6 @@ export const DashboardPage = () => {
   const [loadingLogin, setLoadingLogin] = useState(false);
 
 
-  // Estados para el Snackbar
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
@@ -29,27 +28,23 @@ export const DashboardPage = () => {
   const handleProfile = () => { setProfileOpen(true); handleMenuClose(); };
   const handleProfileClose = () => setProfileOpen(false);
 
-  // Manejador de inicio de sesión modificado para incluir el estado de carga
   const handleLogin = async () => {
     setLoadingLogin(true);
     try {
       await login();
     } catch (error) {
       console.error("Login failed:", error);
-      // Aquí podrías añadir una notificación de error para el usuario
     } finally {
       setLoadingLogin(false);
     }
   };
 
-  // Manejador para abrir el Snackbar
   const handleSnackbarOpen = (message, severity = 'success') => {
     setSnackbarMessage(message);
     setSnackbarSeverity(severity);
     setSnackbarOpen(true);
   };
 
-  // Manejador para cerrar el Snackbar
   const handleSnackbarClose = (event, reason) => {
     if (reason === 'clickaway') {
       return;
@@ -264,7 +259,6 @@ export const DashboardPage = () => {
 
             {userWithRole?.role === 'ADMIN_ROLE' && (
               <Grid container spacing={5} sx={{ mb: 2, justifyContent: 'center' }}>
-                {/* Botones de acceso rápido */}
                 <Grid item xs={12}>
                   <Box
                     sx={{
@@ -328,7 +322,7 @@ export const DashboardPage = () => {
                     <Paper
                       elevation={3}
                       sx={{
-                        p: 6, // Increased padding for a larger overall appearance
+                        p: 6,
                         borderRadius: 4,
                         textAlign: 'center',
                         bgcolor: '#fff',
@@ -338,33 +332,33 @@ export const DashboardPage = () => {
                           transform: 'translateY(-6px)',
                           boxShadow: 6,
                         },
-                        minWidth: { xs: '80%', sm: 'auto' }, // Optional: Make it larger on small screens
-                        maxWidth: { xs: '300px', sm: '100%' } // Optional: Control max width
+                        minWidth: { xs: '80%', sm: 'auto' }, 
+                        maxWidth: { xs: '300px', sm: '100%' }
                       }}
                     >
                       <Box
                         sx={{
                           mx: 'auto',
-                          mb: 3, // Increased margin-bottom for more spacing
-                          width: 80, // Increased width for a larger icon container
-                          height: 80, // Increased height for a larger icon container
+                          mb: 3, 
+                          width: 80,
+                          height: 80,
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
                           borderRadius: '50%',
                           backgroundColor: item.bg,
                           color: item.color,
-                          '& .MuiSvgIcon-root': { // Targeting the icon directly
-                            fontSize: '3rem', // Increased icon size
+                          '& .MuiSvgIcon-root': { 
+                            fontSize: '3rem',
                           },
                         }}
                       >
                         {item.icon}
                       </Box>
-                      <Typography variant="h3" fontWeight="bold" color="text.primary"> {/* Changed to h3 for larger text */}
+                      <Typography variant="h3" fontWeight="bold" color="text.primary">
                         {item.value}
                       </Typography>
-                      <Typography variant="h6" color="text.secondary"> {/* Changed to h6 for larger text */}
+                      <Typography variant="h6" color="text.secondary">
                         {item.label}
                       </Typography>
                     </Paper>
@@ -649,18 +643,17 @@ export const DashboardPage = () => {
 
       <UserProfile open={profileOpen} onClose={handleProfileClose} user={user} />
 
-      {/* Snackbar para notificaciones */}
       <Snackbar
         open={snackbarOpen}
-        autoHideDuration={6000} // Se cierra automáticamente después de 6 segundos
+        autoHideDuration={6000} 
         onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }} // Posición en la parte inferior central
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }} 
       >
         <Alert
           onClose={handleSnackbarClose}
           severity={snackbarSeverity}
           sx={{ width: '100%', borderRadius: 2 }}
-          variant="filled" // Estilo de alerta con fondo de color
+          variant="filled" 
         >
           {snackbarMessage}
         </Alert>

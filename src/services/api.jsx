@@ -1,14 +1,13 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-    baseURL: `http://localhost:3000/BlueBrain/v1`,
-    //baseURL: `https://nodejsbluebrainbackend.vercel.app/BlueBrain/v1`,
+    baseURL: `https://nodejsbluebrainbackend.vercel.app/BlueBrain/v1`,
     timeout: 15000, 
     httpsAgent: false
 });
 
 export const authEndpoints = {
-    login: `http://localhost:3000/BlueBrain/v1/auth/login`
+    login: `https://nodejsbluebrainbackend.vercel.app/BlueBrain/v1/auth/login`
 };
 
 apiClient.interceptors.request.use(

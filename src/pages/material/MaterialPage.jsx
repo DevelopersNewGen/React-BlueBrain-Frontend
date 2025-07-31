@@ -96,7 +96,7 @@ const MaterialPage = () => {
             <Typography 
               variant="h4" 
               component="h1"
-              sx={{ fontWeight: 'bold', color: '#0D47A1' /* azul intenso */, letterSpacing: 1 }}
+              sx={{ fontWeight: 'bold', color: '#0D47A1' , letterSpacing: 1 }}
             >
               Materiales Educativos
             </Typography>

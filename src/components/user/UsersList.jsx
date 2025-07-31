@@ -90,23 +90,20 @@ const UsersList = () => {
                 border: 'none',
                 fontSize: '0.9rem',
 
-                // Encabezados azul oscuro y texto blanco
                 '& .MuiDataGrid-columnHeaders': {
-                  backgroundColor: '#0D47A1',  // azul oscuro
+                  backgroundColor: '#0D47A1', 
                   color: '#fff',
                   fontWeight: '600',
                   letterSpacing: 0.5,
                 },
 
-                // Filas con fondo azul medio y texto blanco
                 '& .MuiDataGrid-row': {
-                  backgroundColor: '#1976d2',  // azul medio
+                  backgroundColor: '#1976d2',
                   color: '#fff',
                   transition: 'background-color 0.3s ease, color 0.3s ease, transform 0.2s ease',
                   cursor: 'pointer',
                 },
 
-                // Hover filas: fondo blanco, texto azul oscuro y ligera sombra + zoom
                 '& .MuiDataGrid-row:hover': {
                   backgroundColor: '#fff',
                   color: '#0D47A1',
@@ -114,12 +111,10 @@ const UsersList = () => {
                   boxShadow: '0 4px 12px rgba(13, 71, 161, 0.3)',
                 },
 
-                // Asegurar que las celdas tomen el color del texto correcto
                 '& .MuiDataGrid-cell': {
                   borderBottom: 'none',
                 },
 
-                // Footer con fondo azul claro
                 '& .MuiDataGrid-footerContainer': {
                   backgroundColor: '#e3f2fd',
                   borderTop: 'none',
