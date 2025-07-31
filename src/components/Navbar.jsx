@@ -4,6 +4,7 @@ import { AppBar, Toolbar, Typography, Box, Button, Avatar, Menu, MenuItem, ListI
 import { Dashboard, Person, ExitToApp } from '@mui/icons-material';
 import UserProfile from './user/UserProfile';
 import useLogin from '../shared/hooks/useLogin';
+import logo from "../assets/Logo DBB (3).png";
 
 
 const menuOptionsByRole = {
@@ -56,20 +57,20 @@ const Navbar = ({ user: propUser, userWithRole: propUserWithRole, onLogout }) =>
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
-  
-  const handleProfile = () => { 
-    setProfileOpen(true); 
-    handleMenuClose(); 
+
+  const handleProfile = () => {
+    setProfileOpen(true);
+    handleMenuClose();
   };
-  
+
   const handleProfileClose = () => {
     setProfileOpen(false);
   };
-  
-  const handleLogout = () => { 
-    handleMenuClose(); 
+
+  const handleLogout = () => {
+    handleMenuClose();
     if (onLogout) {
-      onLogout(); 
+      onLogout();
     } else if (hookLogout) {
       hookLogout();
     }
@@ -77,18 +78,54 @@ const Navbar = ({ user: propUser, userWithRole: propUserWithRole, onLogout }) =>
 
   return (
     <>
-      <AppBar position="static" elevation={1}>
+      <AppBar position="static" elevation={1} sx={{ backgroundColor: '#1E40AF' }}>
         <Toolbar>
-          <Dashboard sx={{ mr: 2 }} />
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            BlueBrain Dashboard
+          <Box
+            sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer', mr: 2 }}
+            onClick={() => navigate('/')}
+          >
+            <img
+              src={logo}
+              alt="Logo Tutorías"
+              style={{ height: 40, marginRight: 8 }}
+            />
+          </Box>
+
+          <Typography variant="h6" component="div" sx={{
+            flexGrow: 1,
+            fontFamily: "'Nunito', sans-serif",
+            fontWeight: 700,
+            letterSpacing: 1.2,
+            color: '#E0F2F7' // Color de texto más claro para el nombre de la marca
+          }}>
+            BLUE BRAIN
           </Typography>
+
           {userWithRole?.role && (
             <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center' }}>
               {menuOptionsByRole[userWithRole.role]?.map((option) => (
                 <Button
                   key={option.name}
-                  sx={{ my: 2, color: 'white', display: 'block', alignItems: 'center', mx: 1, textTransform: 'none' }}
+                  sx={{
+                    my: 2,
+                    color: 'white',
+                    display: 'block',
+                    alignItems: 'center',
+                    mx: 1,
+                    textTransform: 'none',
+                    fontWeight: 'bold',
+                    borderRadius: 2, // Bordes ligeramente redondeados
+                    padding: '8px 16px', // Espaciado interno
+                    transition: 'all 0.3s ease-in-out', // Transición suave para todos los cambios
+                    '&:hover': {
+                      backgroundColor: 'rgba(255, 255, 255, 0.2)', // Fondo ligeramente visible al pasar el ratón
+                      transform: 'scale(1.05) translateY(-2px)', // Ligero aumento de tamaño y elevación
+                      boxShadow: '0 4px 8px rgba(0,0,0,0.2)', // Sombra para efecto de elevación
+                    },
+                    '&:active': {
+                      transform: 'scale(0.98)', // Pequeño efecto de "presión" al hacer clic
+                    },
+                  }}
                   onClick={() => navigate(option.route)}
                 >
                   {option.name.toUpperCase()}
@@ -96,17 +133,17 @@ const Navbar = ({ user: propUser, userWithRole: propUserWithRole, onLogout }) =>
               ))}
             </Box>
           )}
-          <Box sx={{ display: 'flex', alignItems: 'center', ml: 'auto' }}>
-            <IconButton 
+          <Box sx={{ display: 'flex', alignItems: 'center', ml: 2 }}>
+            <IconButton
               id="user-menu-button"
-              onClick={handleMenuClick} 
-              sx={{ p: 0 }}
+              onClick={handleMenuClick}
+              sx={{ p: 0, transition: 'transform 0.2s ease-in-out', '&:hover': { transform: 'scale(1.1)' } }} // Animación al pasar el ratón por el avatar
               aria-controls={open ? 'user-menu' : undefined}
               aria-haspopup="true"
               aria-expanded={open ? 'true' : undefined}
               aria-label="Abrir menú de usuario"
             >
-              <Avatar src={user?.profilePicture || user?.img} />
+              <Avatar src={user?.profilePicture || user?.img}  sx={{ width: 40, height: 40, border: '2px solid white' }} /> {/* Borde blanco para el avatar */}
             </IconButton>
             <Menu
               id="user-menu"
@@ -122,20 +159,22 @@ const Navbar = ({ user: propUser, userWithRole: propUserWithRole, onLogout }) =>
                 role: 'menu'
               }}
             >
-              <MenuItem 
+              <MenuItem
                 onClick={handleProfile}
                 role="menuitem"
                 aria-label="Ver perfil de usuario"
+                sx={{ '&:hover': { backgroundColor: '#E3F2FD' } }} // Color de fondo al pasar el ratón
               >
                 <ListItemIcon>
                   <Person fontSize="small" />
                 </ListItemIcon>
                 Ver perfil
               </MenuItem>
-              <MenuItem 
+              <MenuItem
                 onClick={handleLogout}
                 role="menuitem"
                 aria-label="Cerrar sesión"
+                sx={{ '&:hover': { backgroundColor: '#FFEBEE' } }} // Color de fondo al pasar el ratón
               >
                 <ListItemIcon>
                   <ExitToApp fontSize="small" />
