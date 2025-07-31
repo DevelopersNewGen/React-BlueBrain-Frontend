@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useLogin from '../../shared/hooks/useLogin';
 import UserProfile from '../../components/user/UserProfile';
-import {  Box, Container, Typography, Paper, Button, Grid, CircularProgress, Snackbar, Alert} from '@mui/material';
-import { AccountCircle, Dashboard, InfoOutlined, SchoolOutlined, BookOutlined, EmojiObjects, Stars} from '@mui/icons-material';
+import { Box, Container, Typography, Paper, Button, Grid, CircularProgress, Snackbar, Alert } from '@mui/material';
+import { AccountCircle, Dashboard, InfoOutlined, SchoolOutlined, BookOutlined, EmojiObjects, Stars } from '@mui/icons-material';
 
 import Navbar from '../../components/Navbar';
 import { motion } from 'framer-motion';
@@ -15,7 +15,7 @@ export const DashboardPage = () => {
   const [loadingLogin, setLoadingLogin] = useState(false);
 
 
-// Estados para el Snackbar
+  // Estados para el Snackbar
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
@@ -371,7 +371,7 @@ export const DashboardPage = () => {
                   </Grid>
                 ))}
 
-                
+
               </Grid>
             )}
 
@@ -442,7 +442,7 @@ export const DashboardPage = () => {
                       boxShadow: 7,
                     },
                   }}
-                  onClick={() => navigate('/my-classes')}
+                  onClick={(e) =>  {navigate('/tutorial')}}
                 >
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
                     <BookOutlined sx={{ fontSize: 40, color: '#2563EB' }} />
@@ -465,12 +465,120 @@ export const DashboardPage = () => {
                       borderRadius: 2,
                       fontWeight: 'bold',
                     }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleSnackbarOpen('¡Te has unido a la clase!', 'success'); // <-- Usar el Snackbar
+                  >
+                    Ir Ahora
+                  </Button>
+                </Paper>
+              </motion.div>
+            </Grid>            
+          )}
+
+          {userWithRole?.role === 'STUDENT_ROLE' && (
+            <Grid item xs={12} sm={6} md={4}>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              >
+                <Paper
+                  elevation={4}
+                  sx={{
+                    p: 4,
+                    borderRadius: 3,
+                    bgcolor: '#fff',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    boxShadow: 4,
+                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                    cursor: 'pointer',
+                    '&:hover': {
+                      transform: 'scale(1.03)',
+                      boxShadow: 7,
+                    },
+                  }}
+                  onClick={() => navigate('/materials')}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+                    <EmojiObjects sx={{ fontSize: 40, color: '#2563EB' }} />
+                    <Typography variant="h6" sx={{ fontWeight: '600', color: '#1F2937' }}>
+                      Material Pendiente
+                    </Typography>
+                  </Box>
+                  <Typography variant="body1" sx={{ color: '#374151' }}>
+                    📄 Tienes 3 material de apoyo por completar.
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    📅 Fecha límite: 29 de agosto
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    size="small"
+                    sx={{
+                      bgcolor: '#3B82F6',
+                      '&:hover': { bgcolor: '#2563EB' },
+                      borderRadius: 2,
+                      fontWeight: 'bold',
                     }}
                   >
-                    Unirse Ahora
+                    Revisar Tareas
+                  </Button>
+                </Paper>
+              </motion.div>
+            </Grid>
+          )}
+
+           {userWithRole?.role === 'STUDENT_ROLE' && (
+            <Grid item xs={12} sm={6} md={4}>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              >
+                <Paper
+                  elevation={4}
+                  sx={{
+                    p: 4,
+                    borderRadius: 3,
+                    bgcolor: '#fff',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    boxShadow: 4,
+                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                    cursor: 'pointer',
+                    '&:hover': {
+                      transform: 'scale(1.03)',
+                      boxShadow: 7,
+                    },
+                  }}
+                  onClick={() => navigate('/tutorial')}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+                    <BookOutlined sx={{ fontSize: 40, color: '#2563EB' }} />
+                    <Typography variant="h6" sx={{ fontWeight: '600', color: '#1F2937' }}>
+                      Próxima Clase
+                    </Typography>
+                  </Box>
+                  <Typography variant="body1" sx={{ color: '#374151' }}>
+                    📘 Física con Julio Pop
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    🕒 Mañana, 09:00 AM - 10:00 AM
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    size="small"
+                    sx={{
+                      bgcolor: '#3B82F6',
+                      '&:hover': { bgcolor: '#2563EB' },
+                      borderRadius: 2,
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    Ir Ahora
                   </Button>
                 </Paper>
               </motion.div>
@@ -502,7 +610,7 @@ export const DashboardPage = () => {
                       boxShadow: 7,
                     },
                   }}
-                  onClick={() => navigate('/tutor-requests')}
+                  onClick={() => navigate('/applications')}
                 >
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
                     <SchoolOutlined sx={{ fontSize: 40, color: '#16A34A' }} />
