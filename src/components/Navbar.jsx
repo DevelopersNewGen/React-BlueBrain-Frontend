@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AppBar, Toolbar, Typography, Box, Button, Avatar, Menu, MenuItem, ListItemIcon, IconButton } from '@mui/material';
 import { Dashboard, Person, ExitToApp } from '@mui/icons-material';
 import UserProfile from './user/UserProfile';
@@ -8,11 +9,18 @@ import useLogin from '../shared/hooks/useLogin';
 const menuOptionsByRole = {
   ADMIN_ROLE: [
     { name: 'Usuarios', route: '/usuarios' },
+    { name: 'Materias', route: '/subjects' },
+    { name: 'Aplicaciones', route: '/applications' },
+    { name: 'Reportes', route: '/reportes' },
+    { name: 'Material' },
+    { name: 'Tutorial', route: '/tutorial' },
+
   ],
   STUDENT_ROLE: [
     { name: 'Material' },
     { name: 'Mi perfil' },
-    { name: 'Materias' },
+    { name: 'Materias', route: '/subjects' },
+    { name: 'Tutorial', route: '/tutorial' },
     { name: 'Reportes' },
     { name: 'Solicitudes' }
   ],
@@ -20,21 +28,25 @@ const menuOptionsByRole = {
     { name: 'Material' },
     { name: 'Mi perfil' },
     { name: 'Estudiantes' },
-    { name: 'Materias' },
-    { name: 'Reportes' },
-    { name: 'Solicitudes' }
+    { name: 'Materias', route: '/subjects' },
+    { name: 'Mis Materias', route: '/subjectsUser' },
+    { name: 'Aplicaciones', route: '/applications' },
+    { name: 'Reportes', route: '/reportes' },
+    { name: 'Solicitudes' },
+    { name: 'Tutorial', route: '/tutorial' },
   ],
   TUTOR_ROLE: [
     { name: 'Material' },
     { name: 'Mi perfil' },
-    { name: 'Tutoreados' },
-    { name: 'Materias' },
-    { name: 'Reportes' },
+    { name: 'Materias', route: '/subjects' },
+    { name: 'Tutorial', route: '/tutorial' },
     { name: 'Solicitudes' }
   ]
 };
 
-const Navbar = ({ user: propUser, userWithRole: propUserWithRole, navigate, onLogout }) => {
+const Navbar = ({ user: propUser, userWithRole: propUserWithRole, onLogout }) => {
+  const navigate = useNavigate();
+
   const [anchorEl, setAnchorEl] = useState(null);
   const [profileOpen, setProfileOpen] = useState(false);
   const open = Boolean(anchorEl);
@@ -82,9 +94,7 @@ const Navbar = ({ user: propUser, userWithRole: propUserWithRole, navigate, onLo
                 <Button
                   key={option.name}
                   sx={{ my: 2, color: 'white', display: 'block', alignItems: 'center', mx: 1, textTransform: 'none' }}
-                  onClick={() => {
-                    if (option.route && navigate) navigate(option.route);
-                  }}
+                  onClick={() => navigate(option.route)}
                 >
                   {option.name.toUpperCase()}
                 </Button>
