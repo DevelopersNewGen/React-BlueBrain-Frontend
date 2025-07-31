@@ -87,13 +87,17 @@ const MaterialPage = () => {
       <Navbar user={user} userWithRole={userWithRole} />
       
       {loading ? (
-        <Container sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-          <CircularProgress />
+        <Container sx={{ display: 'flex', justifyContent: 'center', mt: 6 }}>
+          <CircularProgress color="primary" size={50} />
         </Container>
       ) : (
-        <Container maxWidth="lg" sx={{ mt: 4 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-            <Typography variant="h4" component="h1">
+        <Container maxWidth="lg" sx={{ mt: 5, mb: 8 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+            <Typography 
+              variant="h4" 
+              component="h1"
+              sx={{ fontWeight: 'bold', color: '#0D47A1' , letterSpacing: 1 }}
+            >
               Materiales Educativos
             </Typography>
             {canManageMaterials && (
@@ -101,6 +105,11 @@ const MaterialPage = () => {
                 variant="contained"
                 startIcon={<AddIcon />}
                 onClick={handleCreateDialogOpen}
+                sx={{ 
+                  backgroundColor: '#1976d2', 
+                  '&:hover': { backgroundColor: '#1565c0' },
+                  boxShadow: '0 3px 6px rgba(25, 118, 210, 0.4)'
+                }}
               >
                 Crear Material
               </Button>
@@ -144,7 +153,7 @@ const MaterialPage = () => {
           {error && (
             <Alert 
               severity="error" 
-              sx={{ mb: 3 }}
+              sx={{ mb: 3, fontWeight: 'medium', fontSize: '1rem' }}
               onClose={clearError}
             >
               {error}
@@ -164,11 +173,11 @@ const MaterialPage = () => {
             sx={{ 
               display: 'grid',
               gridTemplateColumns: {
-                xs: 'repeat(1, 1fr)',
-                md: 'repeat(2, 1fr)', 
-                lg: 'repeat(3, 1fr)'
+                xs: '1fr',
+                sm: 'repeat(2, 1fr)',
+                md: 'repeat(3, 1fr)'
               },
-              gap: 3
+              gap: 4
             }}
           >
             {filteredMaterials.map((material) => (
@@ -177,42 +186,60 @@ const MaterialPage = () => {
                   <Typography variant="h6" gutterBottom>
                     {material.title}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                    {material.description}
+                  <Typography 
+                    variant="body2" 
+                    color="text.secondary" 
+                    sx={{ mb: 2, minHeight: 48, lineHeight: 1.4 }}
+                  >
+                    {material.description || 'Sin descripción disponible'}
                   </Typography>
-                  <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+                  <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 1 }}>
                     <Chip 
                       label={material.grade} 
                       color="primary" 
-                      size="small" 
+                      size="small"
+                      sx={{ fontWeight: '600' }}
                     />
                     {material.subject?.name && (
                       <Chip 
                         label={material.subject.name} 
                         color="secondary" 
                         size="small" 
+                        sx={{ fontWeight: '600' }}
                       />
                     )}
                   </Box>
                   {material.uploaderId?.name && (
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography 
+                      variant="caption" 
+                      color="text.secondary" 
+                      sx={{ fontStyle: 'italic' }}
+                    >
                       Subido por: {material.uploaderId.name}
                     </Typography>
                   )}
                 </CardContent>
+
                 <CardActions sx={{ justifyContent: 'space-between', px: 2, pb: 2 }}>
                   <Button
                     size="small"
                     startIcon={<OpenIcon />}
                     onClick={() => window.open(material.fileUrl, '_blank')}
+                    sx={{
+                      color: '#0D47A1',
+                      fontWeight: '600',
+                      '&:hover': { backgroundColor: 'rgba(25, 118, 210, 0.1)' }
+                    }}
                   >
                     Ver Material
                   </Button>
+
                   {canManageMaterials && (
                     <Box>
                       <IconButton 
                         size="small" 
                         color="primary"
+                        aria-label={`Editar material ${material.title}`}
                         onClick={() => handleEditDialogOpen(material)}
                       >
                         <EditIcon />
@@ -220,6 +247,7 @@ const MaterialPage = () => {
                       <IconButton 
                         size="small" 
                         color="error"
+                        aria-label={`Eliminar material ${material.title}`}
                         onClick={() => handleDeleteDialogOpen(material)}
                       >
                         <DeleteIcon />
@@ -231,13 +259,10 @@ const MaterialPage = () => {
             ))}
           </Box>
 
-          {filteredMaterials.length === 0 && !loading && (
-            <Box sx={{ textAlign: 'center', mt: 4 }}>
-              <Typography variant="h6" color="text.secondary">
-                {selectedSubject || searchTerm 
-                  ? 'No hay materiales que coincidan con los filtros seleccionados' 
-                  : 'No hay materiales disponibles'
-                }
+          {materials.length === 0 && !loading && (
+            <Box sx={{ textAlign: 'center', mt: 6 }}>
+              <Typography variant="h6" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+                No hay materiales disponibles
               </Typography>
               {(selectedSubject || searchTerm) && (
                 <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
@@ -265,15 +290,22 @@ const MaterialPage = () => {
             onClose={handleDeleteDialogClose}
             aria-labelledby="delete-dialog-title"
             aria-describedby="delete-dialog-description"
+            sx={{
+              '& .MuiDialog-paper': {
+                borderRadius: 3,
+                padding: 2,
+                boxShadow: '0 8px 24px rgba(0, 71, 171, 0.3)'
+              }
+            }}
           >
-            <DialogTitle id="delete-dialog-title">
+            <DialogTitle id="delete-dialog-title" sx={{ color: '#d32f2f', fontWeight: 'bold' }}>
               Confirmar eliminación
             </DialogTitle>
-            <DialogContent id="delete-dialog-description">
+            <DialogContent id="delete-dialog-description" sx={{ fontSize: '1rem' }}>
               ¿Estás seguro de que deseas eliminar el material "{deleteDialog.material?.title}"?
             </DialogContent>
             <DialogActions>
-              <Button onClick={handleDeleteDialogClose}>
+              <Button onClick={handleDeleteDialogClose} variant="outlined">
                 Cancelar
               </Button>
               <Button 

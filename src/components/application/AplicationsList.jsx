@@ -23,7 +23,7 @@ import {
   TextField,
   Snackbar
 } from '@mui/material'
-import { 
+import {
   Visibility,
   CheckCircle,
   Cancel,
@@ -35,16 +35,16 @@ import {
 import { useApplications } from '../../shared/hooks/useApplications'
 
 const ApplicationsList = () => {
-  const { 
-    applications, 
-    loading, 
-    error, 
-    updating, 
-    refreshApplications, 
+  const {
+    applications,
+    loading,
+    error,
+    updating,
+    refreshApplications,
     updateStatus,
-    resetAcceptState 
+    resetAcceptState
   } = useApplications()
-  
+
   const [descriptionDialog, setDescriptionDialog] = useState({ open: false, content: '', applicant: '' })
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' })
 
@@ -115,7 +115,7 @@ const ApplicationsList = () => {
   const handleDirectAction = async (applicationId, action) => {
     console.log(`Direct action: ${action} for application:`, applicationId)
     console.log('Full application object:', applications.find(app => (app.aid || app._id) === applicationId))
-    
+
     if (!applicationId) {
       console.error('No application ID provided')
       setSnackbar({
@@ -125,10 +125,10 @@ const ApplicationsList = () => {
       })
       return
     }
-    
+
     try {
       const result = await updateStatus(applicationId, action, '')
-      
+
       if (result.success) {
         setSnackbar({
           open: true,
@@ -170,8 +170,8 @@ const ApplicationsList = () => {
 
   if (error) {
     return (
-      <Alert 
-        severity="error" 
+      <Alert
+        severity="error"
         action={
           <Button color="inherit" size="small" onClick={refreshApplications}>
             Reintentar
@@ -189,8 +189,8 @@ const ApplicationsList = () => {
         <Typography variant="h6" color="text.secondary">
           No hay aplicaciones registradas
         </Typography>
-        <Button 
-          variant="outlined" 
+        <Button
+          variant="outlined"
           onClick={refreshApplications}
           sx={{ mt: 2 }}
         >
@@ -206,8 +206,8 @@ const ApplicationsList = () => {
         <Typography variant="h5" component="h2">
           Aplicaciones de Tutoría
         </Typography>
-        <Button 
-          variant="outlined" 
+        <Button
+          variant="outlined"
           onClick={refreshApplications}
           disabled={loading}
         >
@@ -244,15 +244,43 @@ const ApplicationsList = () => {
           </TableHead>
           <TableBody>
             {applications.map((application) => (
-              <TableRow 
+              <TableRow
                 key={application.aid || application._id || Math.random()}
                 hover
-                sx={{ '&:nth-of-type(odd)': { backgroundColor: 'action.hover' } }}
+                sx={{
+                  cursor: 'pointer',
+                  transition: 'background-color 0.3s ease, color 0.3s ease',
+                  '&:nth-of-type(odd)': { backgroundColor: 'action.hover' },
+                  '&:hover': {
+                    backgroundColor: 'primary.blue',
+                    color: 'common.blue',
+                    '& .MuiTableCell-root': {
+                      color: 'common.blue',
+                    },
+                    '& .MuiChip-root': {
+                      borderColor: 'common.blue',
+                      color: 'primary.blue',
+                      backgroundColor: 'common.blue',
+                      fontWeight: 'bold',
+                    },
+                    '& .zoom-icon': {
+                      color: 'primary.blue',
+                      backgroundColor: 'common.blue',
+                      transform: 'scale(1.1)',
+                      transition: 'transform 0.3s ease, background-color 0.3s ease, color 0.3s ease',
+                      '&:hover': {
+                        backgroundColor: 'primary.dark',
+                        color: 'common.blue',
+                        transform: 'scale(1.2)',
+                      },
+                    },
+                  },
+                }}
               >
                 <TableCell>
                   <Box display="flex" alignItems="center" gap={2}>
-                    <Avatar 
-                      src={application.applicantId?.profilePicture} 
+                    <Avatar
+                      src={application.applicantId?.profilePicture}
                       sx={{ width: 40, height: 40 }}
                     >
                       {application.applicantId?.name?.charAt(0).toUpperCase()}
@@ -267,7 +295,7 @@ const ApplicationsList = () => {
                     </Box>
                   </Box>
                 </TableCell>
-                
+
                 <TableCell>
                   <Box>
                     <Typography variant="body2" fontWeight="medium">
@@ -278,12 +306,12 @@ const ApplicationsList = () => {
                     </Typography>
                   </Box>
                 </TableCell>
-                
+
                 <TableCell>
                   <Box display="flex" alignItems="center" gap={1}>
-                    <Typography 
-                      variant="body2" 
-                      sx={{ 
+                    <Typography
+                      variant="body2"
+                      sx={{
                         maxWidth: 150,
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
@@ -304,7 +332,7 @@ const ApplicationsList = () => {
                     )}
                   </Box>
                 </TableCell>
-                
+
                 <TableCell>
                   <Chip
                     icon={getStatusIcon(application.status)}
@@ -314,13 +342,13 @@ const ApplicationsList = () => {
                     size="small"
                   />
                 </TableCell>
-                
+
                 <TableCell>
                   <Typography variant="body2">
                     {formatDate(application.requestHour || application.createdAt)}
                   </Typography>
                 </TableCell>
-                
+
                 <TableCell>
                   {application.evidence ? (
                     <Tooltip title="Ver evidencia">
@@ -328,6 +356,7 @@ const ApplicationsList = () => {
                         size="small"
                         color="primary"
                         onClick={() => handleViewEvidence(application.evidence)}
+                         className="zoom-icon"
                       >
                         <Visibility />
                       </IconButton>
@@ -348,6 +377,7 @@ const ApplicationsList = () => {
                           color="success"
                           onClick={() => handleDirectAction(application.aid || application._id, 'approved')}
                           disabled={updating}
+                          className="zoom-icon"
                         >
                           <Check />
                         </IconButton>
@@ -358,6 +388,7 @@ const ApplicationsList = () => {
                           color="error"
                           onClick={() => handleDirectAction(application.aid || application._id, 'rejected')}
                           disabled={updating}
+                          className="zoom-icon"
                         >
                           <Close />
                         </IconButton>

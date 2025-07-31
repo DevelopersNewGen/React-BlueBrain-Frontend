@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useLogin from '../../shared/hooks/useLogin';
 import UserProfile from '../../components/user/UserProfile';
-import {  Box, Container, Typography, Paper, Button, Grid, CircularProgress, Snackbar, Alert} from '@mui/material';
-import { AccountCircle, Dashboard, InfoOutlined, SchoolOutlined, BookOutlined, EmojiObjects, Stars} from '@mui/icons-material';
+import { Box, Container, Typography, Paper, Button, Grid, CircularProgress, Snackbar, Alert } from '@mui/material';
+import { AccountCircle, Dashboard, InfoOutlined, SchoolOutlined, BookOutlined, EmojiObjects, Stars } from '@mui/icons-material';
 
 import Navbar from '../../components/Navbar';
 import { motion } from 'framer-motion';
@@ -15,7 +15,6 @@ export const DashboardPage = () => {
   const [loadingLogin, setLoadingLogin] = useState(false);
 
 
-// Estados para el Snackbar
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
@@ -29,27 +28,23 @@ export const DashboardPage = () => {
   const handleProfile = () => { setProfileOpen(true); handleMenuClose(); };
   const handleProfileClose = () => setProfileOpen(false);
 
-  // Manejador de inicio de sesión modificado para incluir el estado de carga
   const handleLogin = async () => {
     setLoadingLogin(true);
     try {
       await login();
     } catch (error) {
       console.error("Login failed:", error);
-      // Aquí podrías añadir una notificación de error para el usuario
     } finally {
       setLoadingLogin(false);
     }
   };
 
-  // Manejador para abrir el Snackbar
   const handleSnackbarOpen = (message, severity = 'success') => {
     setSnackbarMessage(message);
     setSnackbarSeverity(severity);
     setSnackbarOpen(true);
   };
 
-  // Manejador para cerrar el Snackbar
   const handleSnackbarClose = (event, reason) => {
     if (reason === 'clickaway') {
       return;
@@ -264,7 +259,6 @@ export const DashboardPage = () => {
 
             {userWithRole?.role === 'ADMIN_ROLE' && (
               <Grid container spacing={5} sx={{ mb: 2, justifyContent: 'center' }}>
-                {/* Botones de acceso rápido */}
                 <Grid item xs={12}>
                   <Box
                     sx={{
@@ -328,7 +322,7 @@ export const DashboardPage = () => {
                     <Paper
                       elevation={3}
                       sx={{
-                        p: 6, // Increased padding for a larger overall appearance
+                        p: 6,
                         borderRadius: 4,
                         textAlign: 'center',
                         bgcolor: '#fff',
@@ -338,40 +332,40 @@ export const DashboardPage = () => {
                           transform: 'translateY(-6px)',
                           boxShadow: 6,
                         },
-                        minWidth: { xs: '80%', sm: 'auto' }, // Optional: Make it larger on small screens
-                        maxWidth: { xs: '300px', sm: '100%' } // Optional: Control max width
+                        minWidth: { xs: '80%', sm: 'auto' }, 
+                        maxWidth: { xs: '300px', sm: '100%' }
                       }}
                     >
                       <Box
                         sx={{
                           mx: 'auto',
-                          mb: 3, // Increased margin-bottom for more spacing
-                          width: 80, // Increased width for a larger icon container
-                          height: 80, // Increased height for a larger icon container
+                          mb: 3, 
+                          width: 80,
+                          height: 80,
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
                           borderRadius: '50%',
                           backgroundColor: item.bg,
                           color: item.color,
-                          '& .MuiSvgIcon-root': { // Targeting the icon directly
-                            fontSize: '3rem', // Increased icon size
+                          '& .MuiSvgIcon-root': { 
+                            fontSize: '3rem',
                           },
                         }}
                       >
                         {item.icon}
                       </Box>
-                      <Typography variant="h3" fontWeight="bold" color="text.primary"> {/* Changed to h3 for larger text */}
+                      <Typography variant="h3" fontWeight="bold" color="text.primary">
                         {item.value}
                       </Typography>
-                      <Typography variant="h6" color="text.secondary"> {/* Changed to h6 for larger text */}
+                      <Typography variant="h6" color="text.secondary">
                         {item.label}
                       </Typography>
                     </Paper>
                   </Grid>
                 ))}
 
-                
+
               </Grid>
             )}
 
@@ -442,7 +436,7 @@ export const DashboardPage = () => {
                       boxShadow: 7,
                     },
                   }}
-                  onClick={() => navigate('/my-classes')}
+                  onClick={(e) =>  {navigate('/tutorial')}}
                 >
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
                     <BookOutlined sx={{ fontSize: 40, color: '#2563EB' }} />
@@ -465,12 +459,120 @@ export const DashboardPage = () => {
                       borderRadius: 2,
                       fontWeight: 'bold',
                     }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleSnackbarOpen('¡Te has unido a la clase!', 'success'); // <-- Usar el Snackbar
+                  >
+                    Ir Ahora
+                  </Button>
+                </Paper>
+              </motion.div>
+            </Grid>            
+          )}
+
+          {userWithRole?.role === 'STUDENT_ROLE' && (
+            <Grid item xs={12} sm={6} md={4}>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              >
+                <Paper
+                  elevation={4}
+                  sx={{
+                    p: 4,
+                    borderRadius: 3,
+                    bgcolor: '#fff',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    boxShadow: 4,
+                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                    cursor: 'pointer',
+                    '&:hover': {
+                      transform: 'scale(1.03)',
+                      boxShadow: 7,
+                    },
+                  }}
+                  onClick={() => navigate('/materials')}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+                    <EmojiObjects sx={{ fontSize: 40, color: '#2563EB' }} />
+                    <Typography variant="h6" sx={{ fontWeight: '600', color: '#1F2937' }}>
+                      Material Pendiente
+                    </Typography>
+                  </Box>
+                  <Typography variant="body1" sx={{ color: '#374151' }}>
+                    📄 Tienes 3 material de apoyo por completar.
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    📅 Fecha límite: 29 de agosto
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    size="small"
+                    sx={{
+                      bgcolor: '#3B82F6',
+                      '&:hover': { bgcolor: '#2563EB' },
+                      borderRadius: 2,
+                      fontWeight: 'bold',
                     }}
                   >
-                    Unirse Ahora
+                    Revisar Tareas
+                  </Button>
+                </Paper>
+              </motion.div>
+            </Grid>
+          )}
+
+           {userWithRole?.role === 'STUDENT_ROLE' && (
+            <Grid item xs={12} sm={6} md={4}>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              >
+                <Paper
+                  elevation={4}
+                  sx={{
+                    p: 4,
+                    borderRadius: 3,
+                    bgcolor: '#fff',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    boxShadow: 4,
+                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                    cursor: 'pointer',
+                    '&:hover': {
+                      transform: 'scale(1.03)',
+                      boxShadow: 7,
+                    },
+                  }}
+                  onClick={() => navigate('/tutorial')}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+                    <BookOutlined sx={{ fontSize: 40, color: '#2563EB' }} />
+                    <Typography variant="h6" sx={{ fontWeight: '600', color: '#1F2937' }}>
+                      Próxima Clase
+                    </Typography>
+                  </Box>
+                  <Typography variant="body1" sx={{ color: '#374151' }}>
+                    📘 Física con Julio Pop
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    🕒 Mañana, 09:00 AM - 10:00 AM
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    size="small"
+                    sx={{
+                      bgcolor: '#3B82F6',
+                      '&:hover': { bgcolor: '#2563EB' },
+                      borderRadius: 2,
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    Ir Ahora
                   </Button>
                 </Paper>
               </motion.div>
@@ -502,7 +604,7 @@ export const DashboardPage = () => {
                       boxShadow: 7,
                     },
                   }}
-                  onClick={() => navigate('/tutor-requests')}
+                  onClick={() => navigate('/applications')}
                 >
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
                     <SchoolOutlined sx={{ fontSize: 40, color: '#16A34A' }} />
@@ -541,18 +643,17 @@ export const DashboardPage = () => {
 
       <UserProfile open={profileOpen} onClose={handleProfileClose} user={user} />
 
-      {/* Snackbar para notificaciones */}
       <Snackbar
         open={snackbarOpen}
-        autoHideDuration={6000} // Se cierra automáticamente después de 6 segundos
+        autoHideDuration={6000} 
         onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }} // Posición en la parte inferior central
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }} 
       >
         <Alert
           onClose={handleSnackbarClose}
           severity={snackbarSeverity}
           sx={{ width: '100%', borderRadius: 2 }}
-          variant="filled" // Estilo de alerta con fondo de color
+          variant="filled" 
         >
           {snackbarMessage}
         </Alert>
